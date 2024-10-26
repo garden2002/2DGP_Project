@@ -7,15 +7,30 @@ class Knight:
     def __init__(self):
         self.x, self.y = 100 , 300
         self.frame = 0
-        self.action = 12
+        self.dir = 0
+        self.action = 7
         if Knight.image == None:
             Knight.image = load_image('knight.png')
 
     def update(self):
         self.frame = (self.frame + 1) % 7
+        self.x += self.dir * 5
 
     def handle_event(self, event):
-        pass
+        if event.type == SDL_KEYDOWN:
+            if event.key == SDLK_RIGHT:
+                self.dir += 1
+                self.action = 15
+            elif event.key == SDLK_LEFT:
+                self.dir -= 1
+                self.action = 15
+        elif event.type == SDL_KEYUP:
+            if event.key == SDLK_RIGHT:
+                self.dir -= 1
+                self.action = 7
+            elif event.key == SDLK_LEFT:
+                self.dir += 1
+                self.action = 7
 
     def draw(self):
         self.image.clip_draw(self.frame * 128, self.action * 128, 128, 128, self.x, self.y)
@@ -30,7 +45,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             play = False
         else:
-            knight.handle_event(events)
+            knight.handle_event(event)
 
 
 def reset_world():
@@ -63,6 +78,6 @@ while play:
     handle_events()
     update_world()
     render_world()
-    delay(0.1)
+    delay(0.05)
 # finalization code
 close_canvas()
