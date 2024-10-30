@@ -20,12 +20,39 @@ class Idle:
         pass
     @staticmethod
     def do(knight):
-        knight.frame = (knight.frame + 1) % 7
+        knight.frame = (knight.frame + 1) % 8
         pass
     @staticmethod
     def draw(knight):
-        knight.image.clip_draw(knight.frame * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+        knight.image.clip_draw(knight.frame * 80, knight.action * 80, 80, 80, knight.x, knight.y)
         pass
+
+class Run:
+    @staticmethod
+    def enter(knight , e):
+        if right_down(e) or left_up(e):
+            knight.dir = 1
+            pass
+        elif left_down(e) or right_up(e):
+            knight.dir = -1
+            pass
+        knight.frame = 0
+        #시작 시간을 기록
+        knight.start_time = get_time()
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + 1) % 8
+        knight.x += knight.dir * 5
+        pass
+    @staticmethod
+    def draw(knight):
+        knight.image.clip_draw(knight.frame * 80, knight.action * 80, 80, 80, knight.x, knight.y)
+        pass
+
 
 class Knight:
     image = None
@@ -33,16 +60,17 @@ class Knight:
         self.x, self.y = 100 , 300
         self.frame = 0
         self.dir = 0
-        self.action = 7
+        self.action = 0
         self.state_machine = StateMachine(self)  # 소년 객체를 위한 상태 머신인지 알려줄 필요
         self.state_machine.start(Idle)  # 객체를 생성한게 아닌, 직접 Idle 이라는 클래스를 사용
         self.state_machine.set_transitions(
             {
-                Idle:{}
+                Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run},
+                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle}
             }
         )
         if Knight.image == None:
-            Knight.image = load_image('knight.png')
+            Knight.image = load_image('knightrun2.png')
 
     def update(self):
         self.state_machine.update()
