@@ -23,3 +23,7 @@ def remove_object(o):
             return
 
     print(f'CRITICAL: 존재하지 않는 객체{o}를 지우려고 합니다.')
+
+def clear():
+    for layer in world:
+        layer.clear()
