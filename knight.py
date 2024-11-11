@@ -1,7 +1,14 @@
 from pico2d import get_time, load_image
 
+import game_framework
 from state_machine import right_down, left_up, left_down, right_up, start_event, StateMachine
 
+
+PIXEL_PER_METER = (10.0 / 0.2)
+RUN_SPEED_KMPH = 20.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 class Idle:
     @staticmethod
@@ -62,7 +69,7 @@ class Run:
         knight.frame = (knight.frame + 1)
         if knight.frame > 12:
             knight.frame = 5
-        knight.x += knight.dir * 10
+        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
         pass
     @staticmethod
     def draw(knight):
