@@ -10,6 +10,14 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION_IDLE = 9
+FRAMES_PER_ACTION_RUN = 8
+
+
+
 class Idle:
     @staticmethod
     def enter(knight , e):
@@ -30,18 +38,18 @@ class Idle:
         pass
     @staticmethod
     def do(knight):
-        knight.frame = (knight.frame + 1) % 9
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 9
         pass
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                knight.frame * 128, knight.action * 128, 128, 128,
+                int(knight.frame) * 128, knight.action * 128, 128, 128,
                 0,'h',
                 knight.x, knight.y,128,128
             )
         else:
-            knight.image.clip_draw(knight.frame * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
         pass
 
 
@@ -66,7 +74,7 @@ class Run:
         pass
     @staticmethod
     def do(knight):
-        knight.frame = (knight.frame + 1)
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 12:
             knight.frame = 5
         knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -75,12 +83,12 @@ class Run:
     def draw(knight):
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                knight.frame * 128, knight.action * 128, 128, 128,
+                int(knight.frame) * 128, knight.action * 128, 128, 128,
                 0, 'h',
                 knight.x, knight.y, 128, 128
             )
         else:
-            knight.image.clip_draw(knight.frame * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
         pass
 
 
