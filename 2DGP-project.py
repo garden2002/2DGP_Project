@@ -1,5 +1,7 @@
 from pico2d import *
 
+import game_world
+import knight
 from knight import Knight
 
 
@@ -18,25 +20,21 @@ def handle_events():
 
 def reset_world():
     global play
-    global world
     global knight
 
     play = True
     knight = Knight()
-    world = []
-    world.append(knight)
+    game_world.add_object(knight, 1)
 
 
 def update_world():
-    for o in world:
-        o.update()
+    game_world.update()
     pass
 
 
 def render_world():
     clear_canvas()
-    for o in world:
-        o.draw()
+    game_world.render()
     update_canvas()
 
 open_canvas()
