@@ -1,6 +1,6 @@
 # world[0] : 백그라운드 객체들
 # world[1] : foreground 객체들.
-world = [[],[]]
+world = [[],[],[]]
 
 def add_object(o, depth):
     world[depth].append(o)

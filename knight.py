@@ -1,5 +1,7 @@
 import random
 
+import game_world
+import slash
 from pico2d import get_time, load_image
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
@@ -98,8 +100,9 @@ class Run:
 class Slash:
     @staticmethod
     def enter(knight , e):
-        knight.action = random.randint(0,1)
+        knight.action = random.randint(0, 1)
         knight.frame = 0
+        knight.knight_slash()
         #시작 시간을 기록
         pass
     @staticmethod
@@ -128,6 +131,7 @@ class Move_Slash:
     def enter(knight , e):
         knight.action = random.randint(0, 1)
         knight.frame = 0
+        knight.knight_slash()
         #시작 시간을 기록
         pass
     @staticmethod
@@ -182,4 +186,8 @@ class Knight:
         )
     def draw(self):
         self.state_machine.draw()
+
+    def knight_slash(self):
+        slash = Slash(self.x , self.y , self.action)
+        game_world.add_object(slash, 2)
 
