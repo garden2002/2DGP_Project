@@ -2,7 +2,6 @@ from pico2d import *
 
 import game_framework
 import game_world
-import knight
 from knight import Knight
 
 

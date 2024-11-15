@@ -1,5 +1,5 @@
 # event (종류 문자열 , 실제 값)
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x
 
 
 def start_event(e):
@@ -7,6 +7,9 @@ def start_event(e):
 
 def time_out(e):
     return e[0] == 'TIME_OUT'
+
+def end_motion(e):
+    return e[0] == 'ENT_MOTION'
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
@@ -19,6 +22,12 @@ def left_down(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+def z_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_z
+
+def x_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_x
 
 
 # 상태 머신을 처리 관리해주는 클래스
@@ -37,7 +46,8 @@ class StateMachine:
                 if check_event(e):
                     self.cur_state.exit(self.o , e)
                     print(f'EXIT from {self.cur_state}')
-                    self.cur_state =next_state
+                    self.before_state = self.cur_state
+                    self.cur_state = next_state
                     self.cur_state.enter(self.o , e)
                     print(f'ENTER into {self.cur_state}')
                     return
