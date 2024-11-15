@@ -1,11 +1,11 @@
 import random
 
 import game_world
-import slash
 from pico2d import get_time, load_image
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
+from slash import Slash_eff
 from state_machine import right_down, left_up, left_down, right_up, start_event, StateMachine, z_down, x_down, \
     end_motion
 
@@ -84,6 +84,7 @@ class Run:
         if knight.frame > 9:
             knight.frame = 5
         knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
         pass
     @staticmethod
     def draw(knight):
@@ -143,6 +144,7 @@ class Move_Slash:
         if knight.frame > 5:
             knight.state_machine.add_event(('ENT_MOTION', 0))
         knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
         pass
     @staticmethod
     def draw(knight):
@@ -164,6 +166,8 @@ class Knight:
         self.frame = 0
         self.dir = 0
         self.action = 0
+        self.face_dir = 1
+        self.slash_eff = Slash_eff()
         self.state_machine = StateMachine(self)  # 소년 객체를 위한 상태 머신인지 알려줄 필요
         self.state_machine.start(Idle)
         self.state_machine.set_transitions(
@@ -188,6 +192,10 @@ class Knight:
         self.state_machine.draw()
 
     def knight_slash(self):
-        slash = Slash(self.x , self.y , self.action)
-        game_world.add_object(slash, 2)
+        self.slash_eff = Slash_eff()
+        if(self.face_dir == -1):
+            self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x -64,self.y,self.action,self.face_dir
+        else:
+            self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x +64,self.y,self.action,self.face_dir
+        game_world.add_object(self.slash_eff, 2)
 

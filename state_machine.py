@@ -46,7 +46,6 @@ class StateMachine:
                 if check_event(e):
                     self.cur_state.exit(self.o , e)
                     print(f'EXIT from {self.cur_state}')
-                    self.before_state = self.cur_state
                     self.cur_state = next_state
                     self.cur_state.enter(self.o , e)
                     print(f'ENTER into {self.cur_state}')

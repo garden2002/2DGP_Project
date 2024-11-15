@@ -1,6 +1,7 @@
 from pico2d import *
 import game_world
 import game_framework
+from state_machine import StateMachine, right_down, left_up, right_up, left_down, start_event
 
 
 TIME_PER_ACTION = 0.4
@@ -8,21 +9,27 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 3
 
 
-
-class Slash:
+class Slash_eff:
     image = None
 
-    def __init__(self, x = 0, y = 0, action = 0):
-        if Slash.image == None:
-            Slash.image = load_image('slash.png')
-        self.x, self.y = x, y
+    def __init__(self, x = 100, y = 200, action = 0 , face_dir = 1):
+        if Slash_eff.image == None:
+            Slash_eff.image = load_image('slash.png')
+        self.x, self.y , self.action , self.face_dir = x , y , action , face_dir
         self.frame = 0
-        self.action = action
-
-    def draw(self):
-        self.image.clip_draw(int(self.frame) * 256, self.action * 128, 256, 128, self.x, self.y)
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
-        if self.frame > 3:
+        if self.frame > 4:
             game_world.remove_object(self)
+
+    def draw(self):
+        if self.face_dir == 1:
+            self.image.clip_composite_draw(
+                int(self.frame) * 256, self.action * 128, 256, 128,
+                0, 'h',
+                self.x, self.y, 256, 128
+            )
+        else:
+            self.image.clip_draw(int(self.frame) * 256, self.action * 128, 256, 128, self.x,
+                                      self.y)
