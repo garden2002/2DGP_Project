@@ -16,7 +16,7 @@ RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 
-TIME_PER_ACTION = 0.4
+TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION_IDLE = 9
 FRAMES_PER_ACTION_RUN = 8
@@ -171,7 +171,7 @@ class Slash:
     @staticmethod
     def do(knight):
         knight.slash_frame = (knight.slash_frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.slash_frame > 5:
+        if knight.slash_frame > 4:
             knight.slash_frame = 0
             knight.state_machine.add_event(('ENT_MOTION', 0))
     @staticmethod
@@ -181,7 +181,7 @@ class Slash:
                 knight.image.clip_composite_draw(
                     int(knight.slash_frame) * 128, knight.action * 128, 128, 128,
                     0, 'h',
-                    knight.x - 41, knight.y, 128, 128
+                    knight.x - 16, knight.y, 128, 128
                 )
             else:
                 knight.image.clip_composite_draw(
@@ -191,7 +191,7 @@ class Slash:
                 )
         else:
             if knight.action == 0:
-                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 41,
+                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 16,
                                        knight.y)
             else:
                 knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
@@ -208,7 +208,7 @@ class Up_Slash:
     @staticmethod
     def do(knight):
         knight.slash_frame = (knight.slash_frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.slash_frame > 5:
+        if knight.slash_frame > 4:
             knight.slash_frame = 0
             knight.state_machine.add_event(('ENT_MOTION', 0))
     @staticmethod
@@ -218,7 +218,7 @@ class Up_Slash:
                 knight.image.clip_composite_draw(
                     int(knight.slash_frame) * 128, knight.action * 128, 128, 128,
                     0, 'h',
-                    knight.x - 41, knight.y, 128, 128
+                    knight.x - 16, knight.y, 128, 128
                 )
             else:
                 knight.image.clip_composite_draw(
@@ -228,7 +228,7 @@ class Up_Slash:
                 )
         else:
             if knight.action == 0:
-                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 41,
+                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 16,
                                        knight.y)
             else:
                 knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
@@ -253,7 +253,7 @@ class Move_Slash:
     @staticmethod
     def do(knight):
         knight.slash_frame = (knight.slash_frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.slash_frame > 5:
+        if knight.slash_frame > 4:
             knight.slash_frame = 0
             knight.state_machine.add_event(('ENT_MOTION', 0))
         knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -265,7 +265,7 @@ class Move_Slash:
                 knight.image.clip_composite_draw(
                     int(knight.slash_frame) * 128, knight.action * 128, 128, 128,
                     0, 'h',
-                    knight.x - 41, knight.y, 128, 128
+                    knight.x - 16, knight.y, 128, 128
                 )
             else:
                 knight.image.clip_composite_draw(
@@ -275,7 +275,7 @@ class Move_Slash:
                 )
         else:
             if knight.action == 0:
-                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 41,
+                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 16,
                                        knight.y)
             else:
                 knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
@@ -299,7 +299,7 @@ class Up_Move_Slash:
     @staticmethod
     def do(knight):
         knight.slash_frame = (knight.slash_frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.slash_frame > 5:
+        if knight.slash_frame > 4:
             knight.slash_frame = 0
             knight.state_machine.add_event(('ENT_MOTION', 0))
         knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -311,7 +311,7 @@ class Up_Move_Slash:
                 knight.image.clip_composite_draw(
                     int(knight.slash_frame) * 128, knight.action * 128, 128, 128,
                     0, 'h',
-                    knight.x - 41, knight.y, 128, 128
+                    knight.x - 16, knight.y, 128, 128
                 )
             else:
                 knight.image.clip_composite_draw(
@@ -321,10 +321,61 @@ class Up_Move_Slash:
                 )
         else:
             if knight.action == 0:
-                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 41,
+                knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x + 16,
                                        knight.y)
             else:
                 knight.image.clip_draw(int(knight.slash_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+class Dash:
+    @staticmethod
+    def enter(knight , e):
+        knight.frame = 0
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 7:
+            knight.state_machine.add_event(('ENT_MOTION', 0))
+        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def draw(knight):
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.slash_frame) * 256, knight.action * 128, 256, 128,
+                0, 'h',
+                knight.x, knight.y, 256, 128
+            )
+        else:
+            knight.image.clip_draw(int(knight.slash_frame) * 256, knight.action * 128, 256, 128, knight.x, knight.y)
+
+
+class Up_Dash:
+    @staticmethod
+    def enter(knight , e):
+        knight.frame = 0
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 7:
+            knight.state_machine.add_event(('ENT_MOTION', 0))
+        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def draw(knight):
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.slash_frame) * 256, knight.action * 128, 256, 128,
+                0, 'h',
+                knight.x, knight.y, 256, 128
+            )
+        else:
+            knight.image.clip_draw(int(knight.slash_frame) * 256, knight.action * 128, 256, 128, knight.x, knight.y)
 
 
 class Knight:
@@ -348,8 +399,11 @@ class Knight:
 
                 Slash:{end_motion: Idle , right_down: Move_Slash, left_down: Move_Slash, right_up: Move_Slash, left_up: Move_Slash ,up_down:Up_Slash },
                 Move_Slash:{end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash ,up_down:Up_Move_Slash},
-                Up_Slash:{end_motion: Up_Idle , right_down: Up_Move_Slash, left_down: Up_Move_Slash, right_up: Up_Move_Slash, left_up: Up_Move_Slash , up_up:Slash },
-                Up_Move_Slash: {end_motion: Up_Run, right_down: Up_Slash, left_down: Up_Slash,right_up: Up_Slash, left_up: Up_Slash , up_up:Move_Slash}
+                Up_Slash:{end_motion: Up_Idle , right_down: Up_Move_Slash, left_down: Up_Move_Slash, right_up: Up_Move_Slash, left_up: Up_Move_Slash ,up_up:Slash},
+                Up_Move_Slash: {end_motion: Up_Run, right_down: Up_Slash, left_down: Up_Slash,right_up: Up_Slash, left_up: Up_Slash , up_up:Move_Slash},
+
+                Dash:{},
+
             }
         )
         if Knight.image == None:
@@ -369,12 +423,12 @@ class Knight:
         self.slash_eff = Slash_eff()
         if(self.face_dir == -1):
             if self.action == 0:
-                self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x + 32,self.y + 64,self.action,self.face_dir
+                self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x,self.y + 64,self.action,self.face_dir
             else:
                 self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x - 64, self.y, self.action, self.face_dir
         else:
             if self.action == 0:
-                self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x - 32, self.y + 64,self.action,self.face_dir
+                self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x, self.y + 64,self.action,self.face_dir
             else:
                 self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x + 64,self.y,self.action,self.face_dir
 
