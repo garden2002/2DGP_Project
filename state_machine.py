@@ -1,5 +1,5 @@
 # event (종류 문자열 , 실제 값)
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x, SDLK_UP
 
 
 def start_event(e):
@@ -22,6 +22,12 @@ def left_down(e):
 
 def left_up(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
+
+def up_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_UP
+
+def up_up(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_UP
 
 def z_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_z
@@ -69,5 +75,5 @@ class StateMachine:
 
     def add_event(self, e):
         self.event_que.append(e) # 상태머신용 이벤트 추가
-        print(f'    DEBUG: new event {e} is added.')
+        #print(f'    DEBUG: new event {e} is added.')
         pass
