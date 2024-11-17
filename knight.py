@@ -30,6 +30,7 @@ FRAMES_PER_ACTION_IDLE = 9
 FRAMES_PER_ACTION_RUN = 8
 FRAMES_PER_ACTION_SLASH = 5
 FRAMES_PER_ACTION_DASH = 7
+FRAMES_PER_ACTION_JUMP = 12
 
 
 
@@ -349,7 +350,7 @@ class Dash:
     @staticmethod
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_DASH * DASH_ACTION_PER_TIME * game_framework.frame_time)
-        if knight.frame > 7:
+        if knight.frame > 6:
             knight.state_machine.add_event(('ENT_MOTION', 0))
         knight.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
         knight.dash_eff.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
@@ -379,7 +380,7 @@ class Up_Dash:
     @staticmethod
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_DASH * DASH_ACTION_PER_TIME * game_framework.frame_time)
-        if knight.frame > 7:
+        if knight.frame > 6:
             knight.state_machine.add_event(('ENT_MOTION', 0))
         knight.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
         knight.dash_eff.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
@@ -393,6 +394,33 @@ class Up_Dash:
             )
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, knight.x, knight.y)
+
+class Jump:
+    @staticmethod
+    def enter(knight , e):
+        knight.frame = 0
+        knight.action = 6
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 12:
+            knight.frame = 11
+        if knight.frame < 11:
+            knight.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def draw(knight):
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128,
+                0, 'h',
+                knight.x, knight.y, 128, 128
+            )
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
 
 class Knight:
@@ -409,7 +437,7 @@ class Knight:
         self.state_machine.start(Idle)
         self.state_machine.set_transitions(
             {
-                Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, up_down:Up_Idle},
+                Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, up_down:Up_Idle, z_down: Jump},
                 Up_Idle: {right_down: Up_Run, left_down: Up_Run, left_up: Up_Run, right_up: Up_Run, x_down: Up_Slash,up_up:Idle},
 
                 Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash, up_down:Up_Run ,s_down:Dash},
@@ -421,7 +449,9 @@ class Knight:
                 Up_Move_Slash: {end_motion: Up_Run, right_down: Up_Slash, left_down: Up_Slash,right_up: Up_Slash, left_up: Up_Slash , up_up:Move_Slash},
 
                 Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
-                Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash },
+                Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
+
+                Jump:{}
 
             }
         )
