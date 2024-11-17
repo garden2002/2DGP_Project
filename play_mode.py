@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+from grass import Grass
 from knight import Knight
 
 
@@ -18,6 +19,9 @@ def handle_events():
 
 def init():
     global knight
+
+    grass = Grass()
+    game_world.add_object(grass, 0)
 
     knight = Knight()
     game_world.add_object(knight, 1)

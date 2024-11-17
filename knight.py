@@ -423,6 +423,43 @@ class Jump:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
 
+class Move_Jump:
+    @staticmethod
+    def enter(knight , e):
+        if right_down(e) or left_up(e):
+            knight.face_dir = 1
+            knight.dir = 1
+            pass
+        elif left_down(e) or right_up(e):
+            knight.face_dir = -1
+            knight.dir = -1
+            pass
+        knight.frame = 0
+        knight.action = 6
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 12:
+            knight.frame = 11
+        if knight.frame < 11:
+            knight.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def draw(knight):
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128,
+                0, 'h',
+                knight.x, knight.y, 128, 128
+            )
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+
 class Knight:
     image = None
     def __init__(self):
@@ -440,18 +477,20 @@ class Knight:
                 Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, up_down:Up_Idle, z_down: Jump},
                 Up_Idle: {right_down: Up_Run, left_down: Up_Run, left_up: Up_Run, right_up: Up_Run, x_down: Up_Slash,up_up:Idle},
 
-                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash, up_down:Up_Run ,s_down:Dash},
+                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash, up_down:Up_Run ,s_down:Dash, z_down: Move_Jump},
                 Up_Run: {right_down: Up_Idle, left_down: Up_Idle, right_up: Up_Idle, left_up: Up_Idle, x_down: Up_Move_Slash,up_up:Run,s_down:Up_Dash},
 
                 Slash:{end_motion: Idle , right_down: Move_Slash, left_down: Move_Slash, right_up: Move_Slash, left_up: Move_Slash ,up_down:Up_Slash },
                 Move_Slash:{end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash ,up_down:Up_Move_Slash},
+
                 Up_Slash:{end_motion: Up_Idle , right_down: Up_Move_Slash, left_down: Up_Move_Slash, right_up: Up_Move_Slash, left_up: Up_Move_Slash ,up_up:Slash},
                 Up_Move_Slash: {end_motion: Up_Run, right_down: Up_Slash, left_down: Up_Slash,right_up: Up_Slash, left_up: Up_Slash , up_up:Move_Slash},
 
                 Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
                 Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
 
-                Jump:{}
+                Jump:{},
+                Move_Jump:{}
 
             }
         )
