@@ -1,7 +1,7 @@
 import random
 
 import game_world
-from pico2d import get_time, load_image
+from pico2d import get_time, load_image, draw_rectangle
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
@@ -46,12 +46,13 @@ class Idle:
         if not up_up(e):
             knight.action = 4
             knight.frame = 0
-            knight.dir = 0
+            knight.x_dir = 0
     @staticmethod
     def exit(knight , e):
         pass
     @staticmethod
     def do(knight):
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.frame = (knight.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 9
     @staticmethod
     def draw(knight):
@@ -77,13 +78,14 @@ class Up_Idle:
         if not up_down(e):
             knight.action = 4
             knight.frame = 0
-            knight.dir = 0
+            knight.x_dir = 0
         pass
     @staticmethod
     def exit(knight , e):
         pass
     @staticmethod
     def do(knight):
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.frame = (knight.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 9
     @staticmethod
     def draw(knight):
@@ -102,11 +104,11 @@ class Run:
     def enter(knight , e):
         if right_down(e) or left_up(e):
             knight.face_dir = 1
-            knight.dir = 1
+            knight.x_dir = 1
             pass
         elif left_down(e) or right_up(e):
             knight.face_dir = -1
-            knight.dir = -1
+            knight.x_dir = -1
             pass
 
         if not up_up(e):
@@ -120,8 +122,10 @@ class Run:
         knight.frame = (knight.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 9:
             knight.frame = 5
-        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
-        knight.slash_eff.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -138,11 +142,11 @@ class Up_Run:
     def enter(knight , e):
         if right_down(e) or left_up(e):
             knight.face_dir = 1
-            knight.dir = 1
+            knight.x_dir = 1
             pass
         elif left_down(e) or right_up(e):
             knight.face_dir = -1
-            knight.dir = -1
+            knight.x_dir = -1
             pass
 
         if not up_down(e):
@@ -156,8 +160,10 @@ class Up_Run:
         knight.frame = (knight.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 9:
             knight.frame = 5
-        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
-        knight.slash_eff.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -182,8 +188,10 @@ class Slash:
     @staticmethod
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         if knight.frame > 4:
-            knight.state_machine.add_event(('ENT_MOTION', 0))
+            knight.state_machine.add_event(('END_MOTION', 0))
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -219,8 +227,10 @@ class Up_Slash:
     @staticmethod
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         if knight.frame > 4:
-            knight.state_machine.add_event(('ENT_MOTION', 0))
+            knight.state_machine.add_event(('END_MOTION', 0))
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -248,11 +258,11 @@ class Move_Slash:
     def enter(knight , e):
         if right_down(e) or left_up(e):
             knight.face_dir = 1
-            knight.dir = 1
+            knight.x_dir = 1
             pass
         elif left_down(e) or right_up(e):
             knight.face_dir = -1
-            knight.dir = -1
+            knight.x_dir = -1
             pass
         elif x_down(e):
             knight.frame = 0
@@ -265,9 +275,11 @@ class Move_Slash:
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 4:
-            knight.state_machine.add_event(('ENT_MOTION', 0))
-        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
-        knight.slash_eff.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+            knight.state_machine.add_event(('END_MOTION', 0))
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -296,10 +308,10 @@ class Up_Move_Slash:
     def enter(knight , e):
         if right_down(e) or left_up(e):
             knight.face_dir = 1
-            knight.dir = 1
+            knight.x_dir = 1
         elif left_down(e) or right_up(e):
             knight.face_dir = -1
-            knight.dir = -1
+            knight.x_dir = -1
         elif x_down(e):
             knight.frame = 0
             knight.action = 0
@@ -311,9 +323,11 @@ class Up_Move_Slash:
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_SLASH * ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 4:
-            knight.state_machine.add_event(('ENT_MOTION', 0))
-        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
-        knight.slash_eff.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+            knight.state_machine.add_event(('END_MOTION', 0))
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -351,9 +365,9 @@ class Dash:
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_DASH * DASH_ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 6:
-            knight.state_machine.add_event(('ENT_MOTION', 0))
-        knight.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
-        knight.dash_eff.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
+            knight.state_machine.add_event(('END_MOTION', 0))
+        knight.x += knight.x_dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
+        knight.dash_eff.x += knight.x_dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -381,9 +395,9 @@ class Up_Dash:
     def do(knight):
         knight.frame = (knight.frame + FRAMES_PER_ACTION_DASH * DASH_ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 6:
-            knight.state_machine.add_event(('ENT_MOTION', 0))
-        knight.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
-        knight.dash_eff.x += knight.dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
+            knight.state_machine.add_event(('END_MOTION', 0))
+        knight.x += knight.x_dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
+        knight.dash_eff.x += knight.x_dir * RUN_DASH_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -398,19 +412,21 @@ class Up_Dash:
 class Jump:
     @staticmethod
     def enter(knight , e):
-        knight.frame = 0
-        knight.action = 6
+        if z_down(e):
+            knight.frame = 0
+            knight.action = 6
+            knight.y_dir = 1
         pass
     @staticmethod
     def exit(knight , e):
         pass
     @staticmethod
     def do(knight):
-        knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.frame > 12:
-            knight.frame = 11
         if knight.frame < 11:
-            knight.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
+            knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 11:
+            knight.y_dir = -1
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -428,26 +444,98 @@ class Move_Jump:
     def enter(knight , e):
         if right_down(e) or left_up(e):
             knight.face_dir = 1
-            knight.dir = 1
+            knight.x_dir = 1
             pass
         elif left_down(e) or right_up(e):
             knight.face_dir = -1
-            knight.dir = -1
+            knight.x_dir = -1
             pass
-        knight.frame = 0
-        knight.action = 6
+        elif z_down(e):
+            knight.frame = 0
+            knight.action = 6
+            knight.y_dir = 1
         pass
     @staticmethod
     def exit(knight , e):
         pass
     @staticmethod
     def do(knight):
-        knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.frame > 12:
-            knight.frame = 11
         if knight.frame < 11:
-            knight.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
-        knight.x += knight.dir * RUN_SPEED_PPS * game_framework.frame_time
+            knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 11:
+            knight.y_dir = -1
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def draw(knight):
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128,
+                0, 'h',
+                knight.x, knight.y, 128, 128
+            )
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+
+
+class Up_Jump:
+    @staticmethod
+    def enter(knight , e):
+        if z_down(e):
+            knight.frame = 0
+            knight.action = 6
+            knight.y_dir = 1
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        if knight.frame < 11:
+            knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 11:
+            knight.y_dir = -1
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+    @staticmethod
+    def draw(knight):
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128,
+                0, 'h',
+                knight.x, knight.y, 128, 128
+            )
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+
+class Up_Move_Jump:
+    @staticmethod
+    def enter(knight , e):
+        if right_down(e) or left_up(e):
+            knight.face_dir = 1
+            knight.x_dir = 1
+            pass
+        elif left_down(e) or right_up(e):
+            knight.face_dir = -1
+            knight.x_dir = -1
+            pass
+        elif z_down(e):
+            knight.frame = 0
+            knight.action = 6
+            knight.y_dir = 1
+        pass
+    @staticmethod
+    def exit(knight , e):
+        pass
+    @staticmethod
+    def do(knight):
+        if knight.frame < 11:
+            knight.frame = (knight.frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 11:
+            knight.y_dir = -1
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -463,9 +551,10 @@ class Move_Jump:
 class Knight:
     image = None
     def __init__(self):
-        self.x, self.y = 100 , 300
+        self.x, self.y = 100 , 200
         self.frame = 0
-        self.dir = 0
+        self.x_dir = 0
+        self.y_dir = 0
         self.action = 0
         self.face_dir = 1
         self.slash_eff = Slash_eff()
@@ -474,11 +563,11 @@ class Knight:
         self.state_machine.start(Idle)
         self.state_machine.set_transitions(
             {
-                Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, up_down:Up_Idle, z_down: Jump},
-                Up_Idle: {right_down: Up_Run, left_down: Up_Run, left_up: Up_Run, right_up: Up_Run, x_down: Up_Slash,up_up:Idle},
+                Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:Up_Idle},
+                Up_Idle: {right_down: Up_Run, left_down: Up_Run, left_up: Up_Run, right_up: Up_Run, x_down: Up_Slash, z_down: Up_Jump,up_up:Idle},
 
-                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash, up_down:Up_Run ,s_down:Dash, z_down: Move_Jump},
-                Up_Run: {right_down: Up_Idle, left_down: Up_Idle, right_up: Up_Idle, left_up: Up_Idle, x_down: Up_Move_Slash,up_up:Run,s_down:Up_Dash},
+                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash ,s_down:Dash, z_down: Move_Jump, up_down:Up_Run},
+                Up_Run: {right_down: Up_Idle, left_down: Up_Idle, right_up: Up_Idle, left_up: Up_Idle, x_down: Up_Move_Slash, s_down:Up_Dash, z_down: Up_Move_Jump,up_up:Run},
 
                 Slash:{end_motion: Idle , right_down: Move_Slash, left_down: Move_Slash, right_up: Move_Slash, left_up: Move_Slash ,up_down:Up_Slash },
                 Move_Slash:{end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash ,up_down:Up_Move_Slash},
@@ -489,8 +578,11 @@ class Knight:
                 Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
                 Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
 
-                Jump:{},
-                Move_Jump:{}
+                Jump:{end_motion: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash                   ,up_down:Up_Jump},
+                Move_Jump:{end_motion: Run,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash                                     ,up_down:Up_Move_Jump},
+
+                Up_Jump: {end_motion: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump                       ,up_up:Jump},
+                Up_Move_Jump: {end_motion: Up_Run, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump                                       ,up_up:Move_Jump}
 
             }
         )
@@ -506,6 +598,7 @@ class Knight:
         )
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def knight_slash(self):
         self.slash_eff = Slash_eff()
@@ -530,5 +623,18 @@ class Knight:
             self.dash_eff.x, self.dash_eff.y, self.dash_eff.face_dir = self.x -128, self.y,self.face_dir
 
         game_world.add_object(self.dash_eff, 2)
+
+
+    def get_bb(self):
+        return self.x - 30, self.y - 65, self.x + 30, self.y + 65
+
+
+    def handle_collision(self, group, other):
+        # fill here
+        if group == 'knight:grass':
+            self.state_machine.add_event(('END_MOTION', 0))
+            self.y += 1
+            self.y_dir = 0
+        pass
 
 

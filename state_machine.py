@@ -9,7 +9,7 @@ def time_out(e):
     return e[0] == 'TIME_OUT'
 
 def end_motion(e):
-    return e[0] == 'ENT_MOTION'
+    return e[0] == 'END_MOTION'
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT

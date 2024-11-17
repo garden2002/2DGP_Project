@@ -26,9 +26,12 @@ def init():
     knight = Knight()
     game_world.add_object(knight, 1)
 
+    game_world.add_collision_pair('knight:grass', knight, grass)
+
 
 def update():
     game_world.update()
+    game_world.handle_collisions()
     pass
 
 
