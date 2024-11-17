@@ -1,7 +1,6 @@
 from pico2d import *
 import game_world
 import game_framework
-from state_machine import StateMachine, right_down, left_up, right_up, left_down, start_event
 
 
 TIME_PER_ACTION = 0.4
@@ -47,4 +46,5 @@ class Slash_eff:
             else:
                 self.image.clip_draw(int(self.frame) * 256, self.action * 128, 256, 128, self.x,
                                      self.y)
+
 

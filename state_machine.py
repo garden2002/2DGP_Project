@@ -1,5 +1,5 @@
 # event (종류 문자열 , 실제 값)
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x, SDLK_UP
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x, SDLK_UP, SDLK_s
 
 
 def start_event(e):
@@ -34,6 +34,9 @@ def z_down(e):
 
 def x_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_x
+
+def s_down(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_s
 
 
 # 상태 머신을 처리 관리해주는 클래스
