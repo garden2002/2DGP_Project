@@ -11,10 +11,11 @@ class Grass:
 
     def draw(self):
         self.image.draw(self.x, self.y)
+        self.image.draw(self.x + 800, self.y)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 400, self.y - 30, self.x + 400, self.y + 30
+        return self.x - 400, self.y - 30, self.x + 1000, self.y + 30
         pass
 
     def handle_collision(self, group, other):

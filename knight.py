@@ -800,10 +800,10 @@ class Knight:
                 Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
                 Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
 
-                Jump:{landed: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash,s_down:Dash                  ,up_down:Up_Jump},
+                Jump:{landed: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash                ,up_down:Up_Jump},
                 Move_Jump:{landed: Run,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash,s_down:Dash                              ,up_down:Up_Move_Jump},
 
-                Up_Jump: {landed: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash,s_down:Up_Dash                           ,up_up:Jump},
+                Up_Jump: {landed: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash                        ,up_up:Jump},
                 Up_Move_Jump: {landed: Up_Run, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump,x_down:Up_Move_Slash,s_down:Up_Dash                   ,up_up:Move_Jump}
 
             }
@@ -839,6 +839,7 @@ class Knight:
 
         game_world.add_object(self.slash_eff, 2)
         game_world.add_collision_pair('slash:fly', self.slash_eff, None)
+        game_world.add_collision_pair('slash:walk', self.slash_eff, None)
 
     def knight_dash(self):
         self.dash_eff = Dash_eff()
@@ -860,7 +861,7 @@ class Knight:
             self.state_machine.add_event(('Landed', 0))
             self.y += 1
             self.y_dir = 0
-        elif group == 'knight:fly':
+        elif group == 'knight:fly' or group == 'knight:walk':
             if get_time() - self.invincibility_time > 1:
                 self.invincibility_time = get_time()
                 self.hp -= 1

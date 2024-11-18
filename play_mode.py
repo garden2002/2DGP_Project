@@ -5,6 +5,7 @@ import game_world
 from flying_object import Flying_object
 from grass import Grass
 from knight import Knight
+from walk_object import Walk_object
 
 
 def handle_events():
@@ -33,11 +34,18 @@ def init():
     game_world.add_collision_pair('knight:fly', knight, fly)
     game_world.add_collision_pair('slash:fly', None, fly)
 
-    fly = Flying_object(700, 150)
+    fly = Flying_object(300, 150)
     game_world.add_object(fly, 1)
-
     game_world.add_collision_pair('knight:fly', knight, fly)
     game_world.add_collision_pair('slash:fly', None, fly)
+
+    walk = Walk_object(1000 , 130)
+    game_world.add_object(walk, 1)
+    game_world.add_collision_pair('slash:walk', None, walk)
+    game_world.add_collision_pair('knight:walk', knight, walk)
+
+
+
     game_world.add_collision_pair('knight:grass', knight, grass)
 
 

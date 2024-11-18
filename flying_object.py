@@ -68,7 +68,7 @@ class Death:
 class Flying_object:
     image = None
 
-    def __init__(self, x = 700, y= 400 ):
+    def __init__(self, x = 300, y= 400 ):
         self.x, self.y = x, y
         self.action = 0
         self.frame = 0
