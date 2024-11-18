@@ -2,7 +2,7 @@ import random
 from calendar import month
 
 import game_world
-from pico2d import load_image, draw_rectangle
+from pico2d import load_image, draw_rectangle, get_time, load_font
 
 import game_framework
 from dash_eff import Dash_eff
@@ -453,6 +453,7 @@ class Dash:
         if s_down(e):
             knight.frame = 0
             knight.action = 5
+            knight.jump_frame = 12
             knight.knight_dash()
         pass
     @staticmethod
@@ -483,6 +484,7 @@ class Up_Dash:
         if s_down(e):
             knight.frame = 0
             knight.action = 5
+            knight.jump_frame = 12
             knight.knight_dash()
         pass
     @staticmethod
@@ -696,10 +698,13 @@ class Knight:
         self.frame = 0
         self.jump_frame = 0
         self.jump = False
+        self.invincibility_time = 0
         self.x_dir = 0
         self.y_dir = -1
         self.action = 0
         self.face_dir = 1
+        self.hp = 4
+        self.font = load_font('ENCR10B.TTF', 16)
         self.slash_eff = Slash_eff()
         self.dash_eff = Dash_eff()
         self.state_machine = StateMachine(self)  # 소년 객체를 위한 상태 머신인지 알려줄 필요
@@ -721,11 +726,11 @@ class Knight:
                 Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
                 Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
 
-                Jump:{landed: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash                   ,up_down:Up_Jump},
-                Move_Jump:{landed: Run,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash                                     ,up_down:Up_Move_Jump},
+                Jump:{landed: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash,s_down:Dash                  ,up_down:Up_Jump},
+                Move_Jump:{landed: Run,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash,s_down:Dash                              ,up_down:Up_Move_Jump},
 
-                Up_Jump: {landed: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash                         ,up_up:Jump},
-                Up_Move_Jump: {landed: Up_Run, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump,x_down:Up_Move_Slash                              ,up_up:Move_Jump}
+                Up_Jump: {landed: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash,s_down:Up_Dash                           ,up_up:Jump},
+                Up_Move_Jump: {landed: Up_Run, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump,x_down:Up_Move_Slash,s_down:Up_Dash                   ,up_up:Move_Jump}
 
             }
         )
@@ -743,6 +748,7 @@ class Knight:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+        self.font.draw(self.x - 10, self.y + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def knight_slash(self):
         self.slash_eff = Slash_eff()
@@ -758,6 +764,7 @@ class Knight:
                 self.slash_eff.x, self.slash_eff.y, self.slash_eff.action, self.slash_eff.face_dir = self.x + 64,self.y,self.action,self.face_dir
 
         game_world.add_object(self.slash_eff, 2)
+        game_world.add_collision_pair('slash:fly', self.slash_eff, None)
 
     def knight_dash(self):
         self.dash_eff = Dash_eff()
@@ -779,6 +786,12 @@ class Knight:
             self.state_machine.add_event(('Landed', 0))
             self.y += 1
             self.y_dir = 0
+        elif group == 'knight:fly':
+            if get_time() - self.invincibility_time > 1:
+                self.invincibility_time = get_time()
+                self.hp -= 1
+                if self.hp < 1:
+                    self.state_machine.add_event(('Die', 0))
         pass
 
 

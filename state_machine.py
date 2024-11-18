@@ -14,6 +14,9 @@ def end_motion(e):
 def landed(e):
     return e[0] == 'Landed'
 
+def die(e):
+    return e[0] == 'Die'
+
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 

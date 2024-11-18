@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+from flying_object import Flying_object
 from grass import Grass
 from knight import Knight
 
@@ -26,6 +27,17 @@ def init():
     knight = Knight()
     game_world.add_object(knight, 1)
 
+    fly = Flying_object()
+    game_world.add_object(fly, 1)
+
+    game_world.add_collision_pair('knight:fly', knight, fly)
+    game_world.add_collision_pair('slash:fly', None, fly)
+
+    fly = Flying_object(700, 150)
+    game_world.add_object(fly, 1)
+
+    game_world.add_collision_pair('knight:fly', knight, fly)
+    game_world.add_collision_pair('slash:fly', None, fly)
     game_world.add_collision_pair('knight:grass', knight, grass)
 
 
