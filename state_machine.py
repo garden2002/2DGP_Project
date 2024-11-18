@@ -11,6 +11,9 @@ def time_out(e):
 def end_motion(e):
     return e[0] == 'END_MOTION'
 
+def landed(e):
+    return e[0] == 'Landed'
+
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 

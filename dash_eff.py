@@ -32,3 +32,4 @@ class Dash_eff:
                 0, 'h',
                 self.x, self.y, 402, 188
             )
+
