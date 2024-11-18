@@ -83,6 +83,9 @@ class Idle:
             )
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
 
 class Up_Idle:
     @staticmethod
@@ -133,6 +136,10 @@ class Up_Idle:
             )
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
 
 
 class Run:
@@ -190,6 +197,10 @@ class Run:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+
 class Up_Run:
     @staticmethod
     def enter(knight , e):
@@ -243,7 +254,11 @@ class Up_Run:
                 knight.x, knight.y, 128, 128
             )
         else:
-            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)\
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
 
 class Slash:
     @staticmethod
@@ -290,6 +305,10 @@ class Slash:
             else:
                 knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+
 class Up_Slash:
     @staticmethod
     def enter(knight , e):
@@ -335,6 +354,10 @@ class Up_Slash:
                                        knight.y)
             else:
                 knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
 
 class Move_Slash:
     @staticmethod
@@ -392,6 +415,10 @@ class Move_Slash:
             else:
                 knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+
 
 class Up_Move_Slash:
     @staticmethod
@@ -447,6 +474,10 @@ class Up_Move_Slash:
             else:
                 knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+
 class Dash:
     @staticmethod
     def enter(knight , e):
@@ -476,6 +507,14 @@ class Dash:
             )
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        if knight.face_dir == 1:
+            return knight.x + 60, knight.y - 65, knight.x + 120, knight.y + 65
+        else:
+            return knight.x - 120, knight.y - 65, knight.x - 60, knight.y + 65
+
 
 
 class Up_Dash:
@@ -507,6 +546,13 @@ class Up_Dash:
             )
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        if knight.face_dir == 1:
+            return knight.x + 60, knight.y - 65, knight.x + 120, knight.y + 65
+        else:
+            return knight.x - 120, knight.y - 65, knight.x - 60, knight.y + 65
 
 class Jump:
     @staticmethod
@@ -545,6 +591,13 @@ class Jump:
             )
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        if knight.face_dir == 1:
+            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+        else:
+            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
 
 
 class Move_Jump:
@@ -597,6 +650,13 @@ class Move_Jump:
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
 
+    @staticmethod
+    def get_bb(knight):
+        if knight.face_dir == 1:
+            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+        else:
+            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
+
 
 
 class Up_Jump:
@@ -639,6 +699,13 @@ class Up_Jump:
             )
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        if knight.face_dir == 1:
+            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+        else:
+            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
 
 
 class Up_Move_Jump:
@@ -689,6 +756,13 @@ class Up_Move_Jump:
             )
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, knight.x, knight.y)
+
+    @staticmethod
+    def get_bb(knight):
+        if knight.face_dir == 1:
+            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+        else:
+            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
 
 
 class Knight:
@@ -777,7 +851,7 @@ class Knight:
 
 
     def get_bb(self):
-        return self.x - 30, self.y - 65, self.x + 30, self.y + 65
+        return self.state_machine.get_bb()
 
 
     def handle_collision(self, group, other):

@@ -86,3 +86,7 @@ class StateMachine:
         self.event_que.append(e) # 상태머신용 이벤트 추가
         #print(f'    DEBUG: new event {e} is added.')
         pass
+
+    def get_bb(self):
+        return self.cur_state.get_bb(self.o)
+        pass

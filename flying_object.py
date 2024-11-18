@@ -106,7 +106,7 @@ class Flying_object:
 
     def handle_collision(self, group, other):
         if group == 'slash:fly':
-            if get_time() - self.invincibility_time > 0.7:
+            if get_time() - self.invincibility_time > 0.6:
                 self.invincibility_time = get_time()
                 self.hp -= 1
                 if self.hp < 1:
