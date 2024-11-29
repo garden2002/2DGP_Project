@@ -4,15 +4,14 @@ import game_framework
 import game_world
 from Map import TileMap
 from flying_object import Flying_object
-from grass import Grass
 from knight import Knight
 from walk_object import Walk_object
 
 map_data = [
     [1,1,1,1,1,1,1,1,1,1],
     [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,1,1,1,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
+    [1,1,1,0,0,0,0,0,0,0],
     [1,1,1,1,1,1,1,1,1,1],
 ]
 

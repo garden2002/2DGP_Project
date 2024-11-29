@@ -2,6 +2,10 @@
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x, SDLK_UP, SDLK_s
 
 
+
+def fall(e):
+    return e[0] == 'FALLING'
+
 def start_event(e):
     return e[0] == 'START'
 
