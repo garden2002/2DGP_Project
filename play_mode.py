@@ -2,10 +2,20 @@ from pico2d import *
 
 import game_framework
 import game_world
+from Map import TileMap
 from flying_object import Flying_object
 from grass import Grass
 from knight import Knight
 from walk_object import Walk_object
+
+map_data = [
+    [1,1,1,1,1,1,1,1,1,1],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,1,1,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [1,1,1,1,1,1,1,1,1,1],
+]
+
 
 
 def handle_events():
@@ -22,11 +32,13 @@ def handle_events():
 def init():
     global knight
 
-    grass = Grass()
-    game_world.add_object(grass, 0)
+    map = TileMap(map_data)
+    game_world.add_object(map, 0)
 
     knight = Knight()
     game_world.add_object(knight, 1)
+
+    game_world.add_collision_pair('knight:map', knight, None)
 
     fly = Flying_object()
     game_world.add_object(fly, 1)
@@ -46,7 +58,6 @@ def init():
 
 
 
-    game_world.add_collision_pair('knight:grass', knight, grass)
 
 
 def update():

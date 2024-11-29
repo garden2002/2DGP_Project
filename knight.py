@@ -857,10 +857,12 @@ class Knight:
 
     def handle_collision(self, group, other):
         # fill here
-        if group == 'knight:grass':
-            self.state_machine.add_event(('Landed', 0))
-            self.y += 1
-            self.y_dir = 0
+        if group == 'knight:map':
+            if not self.y_dir == 0:
+                self.state_machine.add_event(('Landed', 0))
+                self.y_dir = 0
+                self.y -= self.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+                self.slash_eff.y -= self.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         elif group == 'knight:fly' or group == 'knight:walk':
             if get_time() - self.invincibility_time > 1:
                 self.invincibility_time = get_time()
