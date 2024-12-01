@@ -809,7 +809,7 @@ class Up_Move_Jump:
 class Knight:
     image = None
     def __init__(self):
-        self.x, self.y = 100 , 200
+        self.x, self.y = 100 , 400
         self.frame = 0
         self.jump_frame = 0
         self.jump = False
@@ -922,21 +922,41 @@ class Knight:
     def handle_collision(self, group, other):
         # fill here
         if group == 'knight:tile':
-            tile_top_y = other.get_top()  # 타일 객체에 get_top() 메서드가 있다고 가정
-            if not self.on_ground and not self.jump:  # 이미 지면에 있는 경우 중복 처리 방지
+            left , bottom , right, top = self.get_bb()
+            if bottom + 2 > other.get_top() > bottom and right > other.get_left() and left < other.get_right():
                 if self.state_machine.cur_state in (Jump, Move_Jump, Up_Jump, Up_Move_Jump,
                                                     Fall, Move_Fall, Up_Fall, UP_Move_Fall):
                     self.state_machine.add_event(('Landed', 0))
-                    self.y = tile_top_y + 65  # 타일 위로 위치 보정
-                    self.slash_eff.y = tile_top_y + 65
+                    self.y = other.get_top() + 65  # 타일 위로 위치 보정
+                    self.slash_eff.y = other.get_top() + 65
                     self.on_ground = True
                     self.y_dir = 0
-                elif self.state_machine.cur_state in (Slash,Up_Slash,Move_Slash, Up_Move_Slash):
+                elif self.state_machine.cur_state in (Slash, Up_Slash, Move_Slash, Up_Move_Slash):
                     y_offset = 64 if self.action == 0 else 0
-                    self.y = tile_top_y + 65  # 타일 위로 위치 보정
-                    self.slash_eff.y = tile_top_y + 65 + y_offset
+                    self.y = other.get_top() + 65  # 타일 위로 위치 보정
+                    self.slash_eff.y = other.get_top() + 65 + y_offset
                     self.on_ground = True
                     self.y_dir = 0
+            elif top + 1 > other.get_bottom() > bottom and right > other.get_left() and left < other.get_right():# 아래 -> 위
+                if right - 10 < other.get_left():
+                    pass
+                elif left + 10 > other.get_right():
+                    pass
+                else:
+                    self.y = other.get_bottom() - 65
+                    self.jump_frame = 12
+
+            elif top > other.get_bottom() and bottom < other.get_top() and right > other.get_left() > left:  # 왼 -> 오
+                if bottom + 4 > other.get_top() > bottom and right > other.get_left() and left < other.get_right():
+                    pass
+                else:
+                    self.x = other.get_left() - (self.x - left)
+
+            elif top > other.get_bottom() and bottom < other.get_top() and right > other.get_right() > left:  # 오 -> 왼
+                if bottom + 2 > other.get_top() > bottom and right > other.get_left() and left < other.get_right():
+                    pass
+                else:
+                    self.x = other.get_right() + (right - self.x)
 
         elif group == 'knight:fly' or group == 'knight:walk':
             if get_time() - self.invincibility_time > 1:
