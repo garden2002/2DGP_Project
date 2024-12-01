@@ -16,6 +16,10 @@ class Tile:
 
     def get_top(self):
         return self.y + 40
+    def get_left(self):
+        return self.x - 135
+    def get_right(self):
+        return self.x + 135
 
     def handle_collision(self, group, other):
         pass

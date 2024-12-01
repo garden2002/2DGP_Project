@@ -42,3 +42,10 @@ class TileMap:
         for tile in self.tiles:
             tile.draw()
             draw_rectangle(*tile.get_bb())
+
+    def get_tile_below(self , knight):
+        for tile in self.tiles:  # 타일 리스트를 순회
+            if tile.get_left() < knight.x < tile.get_right():  # 캐릭터가 타일 위에 있는 경우
+                if tile.get_top() < knight.y <= tile.get_top() + 10:  # 타일 위 10픽셀 이내
+                    return tile
+        return None

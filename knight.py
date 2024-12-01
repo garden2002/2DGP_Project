@@ -814,6 +814,11 @@ class Knight:
         if not self.on_ground and self.jump == False:  # 아래로 이동 중일 경우
             self.state_machine.add_event(('FALLING', 0))
 
+        if self.on_ground:
+            tile_below = game_world  # 캐릭터 아래에 타일이 있는지 확인하는 메서드 작성 필요
+            if not tile_below:  # 아래 타일이 없으면 다시 FALLING 상태로 전환
+                self.on_ground = False
+                self.state_machine.add_event(('FALLING', 0))
 
     def handle_event(self, event):
         self.state_machine.add_event(
@@ -867,10 +872,6 @@ class Knight:
                 self.hp -= 1
                 if self.hp < 1:
                     self.state_machine.add_event(('Die', 0))
-
-        if not any(tile.is_colliding(self) for tile in game_world.map.tiles):
-            self.on_ground = False
-            self.state_machine.add_event(('FALLING', 0))
 
         pass
 

@@ -1,3 +1,5 @@
+from turtledemo.nim import NimView
+
 from pico2d import *
 
 import game_framework
@@ -6,6 +8,7 @@ from Map import TileMap
 from flying_object import Flying_object
 from knight import Knight
 from walk_object import Walk_object
+import server
 
 map_data = [
     [1,1,1,1,1,1,1,1,1,1],
@@ -25,39 +28,34 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         else:
-            knight.handle_event(event)
+            server.knight.handle_event(event)
 
 
 def init():
-    global knight
-
-    map = TileMap(map_data)
-    game_world.add_object(map, 0)
-
-    knight = Knight()
-    game_world.add_object(knight, 1)
-
-    game_world.add_collision_pair('knight:map', knight, None)
-
-    fly = Flying_object()
-    game_world.add_object(fly, 1)
-
-    game_world.add_collision_pair('knight:fly', knight, fly)
-    game_world.add_collision_pair('slash:fly', None, fly)
-
-    fly = Flying_object(300, 150)
-    game_world.add_object(fly, 1)
-    game_world.add_collision_pair('knight:fly', knight, fly)
-    game_world.add_collision_pair('slash:fly', None, fly)
-
-    walk = Walk_object(1000 , 130)
-    game_world.add_object(walk, 1)
-    game_world.add_collision_pair('slash:walk', None, walk)
-    game_world.add_collision_pair('knight:walk', knight, walk)
 
 
+    server.tiles = TileMap(map_data)
+    game_world.add_object(server.tiles, 0)
 
+    server.knight = Knight()
+    game_world.add_object(server.knight, 1)
+    game_world.add_collision_pair('knight:map', server.knight, None)
+    game_world.add_collision_pair('knight:fly', server.knight, None)
+    game_world.add_collision_pair('knight:walk', server.knight, None)
 
+    server.flies.append(Flying_object())
+    server.flies.append(Flying_object(300, 150))
+    game_world.add_objects(server.flies, 1)
+    for fly in server.flies:
+        game_world.add_collision_pair('slash:fly', None, fly)
+        game_world.add_collision_pair('knight:fly', None, fly)
+
+    server.walks.append(Walk_object(1000,130))
+    game_world.add_objects(server.walks, 1)
+
+    for walk in server.walks:
+        game_world.add_collision_pair('slash:walk', None, walk)
+        game_world.add_collision_pair('knight:walk', None, walk)
 
 def update():
     game_world.update()
