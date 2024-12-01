@@ -56,6 +56,7 @@ class Death:
             pass
     @staticmethod
     def draw(fly):
+
         if fly.dir == 1:
             fly.image.clip_composite_draw(
                 int(fly.frame) * 140, fly.action * 140, 140, 140,

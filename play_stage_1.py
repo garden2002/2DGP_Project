@@ -1,23 +1,12 @@
-from turtledemo.nim import NimView
-
 from pico2d import *
 
 import game_framework
 import game_world
-from Map import TileMap
 from flying_object import Flying_object
 from knight import Knight
+from stage2 import Stage2
 from walk_object import Walk_object
 import server
-
-map_data = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,1,1,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,1,1,1,1],
-]
-
 
 def handle_events():
     events = get_events()
@@ -31,12 +20,13 @@ def handle_events():
 
 
 def init():
-    server.map = TileMap(map_data)
-    game_world.add_object(server.map, 0)
+    server.stage = Stage2()
+    game_world.add_object(server.stage, 0)
+
 
     server.knight = Knight()
     game_world.add_object(server.knight, 1)
-    game_world.add_collision_pair('knight:map', server.knight, None)
+    game_world.add_collision_pair('knight:tile', server.knight, None)
     game_world.add_collision_pair('knight:fly', server.knight, None)
     game_world.add_collision_pair('knight:walk', server.knight, None)
 

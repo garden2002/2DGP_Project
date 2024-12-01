@@ -1,24 +1,24 @@
 from pico2d import *
+import server
 
 class Tile:
-    def __init__(self, image_path, x, y, size=270):
-        self.image = load_image(image_path)
+    def __init__(self, x, y,x_size ,y_size):
         self.x = x
         self.y = y
-        self.size = size
+        self.x_size = x_size
+        self.y_size = y_size
 
     def draw(self):
-        self.image.draw(self.x, self.y)
+        pass
 
     def get_bb(self):
-        return self.x - 135, self.y - 57, self.x + 135, self.y + 40
-        pass
+        return self.x - self.x_size, self.y - self.y_size, self.x + self.x_size, self.y + self.y_size
     def get_top(self):
-        return self.y + 40
+        return self.y + self.y_size
     def get_left(self):
-        return self.x - 135
+        return self.x - self.x_size
     def get_right(self):
-        return self.x + 135
+        return self.x + self.x_size
 
     def handle_collision(self, group, other):
         pass

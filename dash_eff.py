@@ -1,7 +1,7 @@
 from pico2d import *
 import game_world
 import game_framework
-
+import server
 
 TIME_PER_ACTION = 0.3
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -23,13 +23,15 @@ class Dash_eff:
             game_world.remove_object(self)
 
     def draw(self):
+        sx = self.x - server.stage.window_left
+        sy = self.y - server.stage.window_bottom
         if self.face_dir == 1:
-            self.image.clip_draw(int(self.frame) * 402, 0, 402, 188, self.x,
-                                 self.y)
+            self.image.clip_draw(int(self.frame) * 402, 0, 402, 188, sx,
+                                 sy)
         else:
             self.image.clip_composite_draw(
                 int(self.frame) * 402, 0, 402, 188,
                 0, 'h',
-                self.x, self.y, 402, 188
+                sx, sy, 402, 188
             )
 

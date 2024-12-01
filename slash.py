@@ -1,7 +1,7 @@
 from pico2d import *
 import game_world
 import game_framework
-
+import server
 
 TIME_PER_ACTION = 0.4
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -23,30 +23,41 @@ class Slash_eff:
             game_world.remove_object(self)
 
     def draw(self):
+        sx = self.x - server.stage.window_left
+        sy = self.y - server.stage.window_bottom
         if self.face_dir == 1:
             if self.action == 0:
                 self.image.clip_composite_draw(
                     int(self.frame) * 256, self.action * 128, 256, 128,
                     3.141592 / 2, 'h',
-                    self.x, self.y, 256, 128
+                    sx, sy, 256, 128
                 )
             else:
                 self.image.clip_composite_draw(
                     int(self.frame) * 256, self.action * 128, 256, 128,
                     0, 'h',
-                    self.x, self.y, 256, 128
+                    sx, sy, 256, 128
                 )
         else:
             if self.action == 0:
                 self.image.clip_composite_draw(
                     int(self.frame) * 256, self.action * 128, 256, 128,
                     -3.141592 / 2, ' ',
-                    self.x, self.y, 256, 128
+                    sx, sy, 256, 128
                 )
             else:
-                self.image.clip_draw(int(self.frame) * 256, self.action * 128, 256, 128, self.x,
-                                     self.y)
-        draw_rectangle(*self.get_bb())
+                self.image.clip_draw(int(self.frame) * 256, self.action * 128, 256, 128, sx,
+                                     sy)
+        if self.face_dir == 1:
+            if self.action == 0:
+                draw_rectangle(sx - 40, sy, sx + 40, sy + 110)
+            else:
+                draw_rectangle(sx - 30, sy - 65, sx + 110, sy + 65)
+        else:
+            if self.action == 0:
+                draw_rectangle(sx - 40, sy, sx + 40, sy + 110)
+            else:
+                draw_rectangle(sx - 110, sy - 65, sx + 30, sy + 65)
 
     def get_bb(self):
         if self.face_dir == 1:
