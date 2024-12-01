@@ -52,9 +52,9 @@ def s_down(e):
 # 상태 머신을 처리 관리해주는 클래스
 class StateMachine:
     def __init__(self, o):
+        self.cur_state = None
         self.o = o #boy self가 전달, self.o 상테 머신과 연결된 캐릭터 객체
         self.event_que = []
-        pass
 
     def update(self):
         self.cur_state.do(self.o)

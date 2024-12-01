@@ -4,5 +4,5 @@
 knight = None
 flies = []
 walks = []
-tiles = []
+map = None
 

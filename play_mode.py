@@ -11,13 +11,12 @@ from walk_object import Walk_object
 import server
 
 map_data = [
-    [1,1,1,1,1,1,1,1,1,1],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,1,1,0,0,0,0,0,0,0],
     [1,1,1,1,1,1,1,1,1,1],
 ]
-
 
 
 def handle_events():
@@ -32,10 +31,8 @@ def handle_events():
 
 
 def init():
-
-
-    server.tiles = TileMap(map_data)
-    game_world.add_object(server.tiles, 0)
+    server.map = TileMap(map_data)
+    game_world.add_object(server.map, 0)
 
     server.knight = Knight()
     game_world.add_object(server.knight, 1)
@@ -56,6 +53,8 @@ def init():
     for walk in server.walks:
         game_world.add_collision_pair('slash:walk', None, walk)
         game_world.add_collision_pair('knight:walk', None, walk)
+
+
 
 def update():
     game_world.update()

@@ -19,7 +19,6 @@ def add_object(o, depth):
 def add_objects(ol, depth=0):
     world[depth] += ol
 
-
 def update():
     for layer in world:
         for o in layer:

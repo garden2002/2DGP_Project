@@ -4,7 +4,9 @@ import game_world
 from pico2d import load_image, draw_rectangle, get_time, load_font
 
 import game_framework
+import server
 from dash_eff import Dash_eff
+from server import knight
 from slash import Slash_eff
 from state_machine import (right_down, left_up, left_down, right_up, start_event, StateMachine, z_down, x_down,
                            end_motion, up_down, up_up, s_down, landed, fall)
@@ -38,15 +40,13 @@ class Fall:
     def enter(knight, e):
         knight.action = 7  # 낙하 동작의 인덱스를 8로 설정
         knight.frame = 0
-
+        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
     @staticmethod
     def exit(knight, e):
-        knight.y_dir = 0
         pass
 
     @staticmethod
     def do(knight):
-        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
 
         knight.frame = (knight.frame + FRAMES_PER_ACTION_FALL * ACTION_PER_TIME * game_framework.frame_time)
@@ -70,15 +70,13 @@ class Up_Fall:
     def enter(knight, e):
         knight.action = 7  # 낙하 동작의 인덱스를 8로 설정
         knight.frame = 0
-
+        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
     @staticmethod
     def exit(knight, e):
-        knight.y_dir = 0
         pass
 
     @staticmethod
     def do(knight):
-        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.frame = (knight.frame + FRAMES_PER_ACTION_FALL * ACTION_PER_TIME * game_framework.frame_time)
         if knight.frame > 5:
@@ -108,15 +106,13 @@ class Move_Fall:
             knight.x_dir = -1
         knight.action = 7  # 낙하 동작의 인덱스를 8로 설정
         knight.frame = 0
-
+        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
     @staticmethod
     def exit(knight, e):
-        knight.y_dir = 0
         pass
 
     @staticmethod
     def do(knight):
-        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
 
@@ -148,15 +144,13 @@ class UP_Move_Fall:
             knight.x_dir = -1
         knight.action = 7  # 낙하 동작의 인덱스를 8로 설정
         knight.frame = 0
-
+        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
     @staticmethod
     def exit(knight, e):
-        knight.y_dir = 0
         pass
 
     @staticmethod
     def do(knight):
-        knight.y_dir = -1  # 기사가 아래로 이동하도록 설정
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.frame = (knight.frame + FRAMES_PER_ACTION_FALL * ACTION_PER_TIME * game_framework.frame_time)
@@ -193,6 +187,8 @@ class Idle:
         pass
     @staticmethod
     def do(knight):
+        if not knight.on_ground:  # 지면에 없을 경우 낙하 시작
+            knight.state_machine.add_event(('FALLING', 0))
         knight.frame = (knight.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 9
     @staticmethod
     def draw(knight):
@@ -228,7 +224,8 @@ class Up_Idle:
         pass
     @staticmethod
     def do(knight):
-        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        if not knight.on_ground:  # 지면에 없을 경우 낙하 시작
+            knight.state_machine.add_event(('FALLING', 0))
         knight.frame = (knight.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 9
     @staticmethod
     def draw(knight):
@@ -394,7 +391,6 @@ class Up_Slash:
 
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
-
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -447,6 +443,8 @@ class Move_Slash:
 
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -497,6 +495,8 @@ class Up_Move_Slash:
 
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
         if knight.face_dir == 1:
@@ -770,10 +770,10 @@ class Knight:
         self.state_machine.start(Fall)
         self.state_machine.set_transitions(
             {
-                Idle:{right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:Up_Idle},
+                Idle:{fall: Fall,right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:Up_Idle},
                 Up_Idle: {right_down: Up_Run, left_down: Up_Run, left_up: Up_Run, right_up: Up_Run, x_down: Up_Slash, z_down: Up_Jump,up_up:Idle},
 
-                Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash ,s_down:Dash, z_down: Move_Jump, up_down:Up_Run},
+                Run: {fall: Move_Fall,right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash ,s_down:Dash, z_down: Move_Jump, up_down:Up_Run},
                 Up_Run: {right_down: Up_Idle, left_down: Up_Idle, right_up: Up_Idle, left_up: Up_Idle, x_down: Up_Move_Slash, s_down:Up_Dash, z_down: Up_Move_Jump,up_up:Run},
 
                 Slash:{end_motion: Idle , right_down: Move_Slash, left_down: Move_Slash, right_up: Move_Slash, left_up: Move_Slash ,up_down:Up_Slash },
@@ -785,11 +785,11 @@ class Knight:
                 Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
                 Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
 
-                Jump:{fall: Fall ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash                ,up_down:Up_Jump},
-                Move_Jump:{fall: Move_Fall,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash,s_down:Dash                              ,up_down:Up_Move_Jump},
+                Jump:{landed: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash                ,up_down:Up_Jump},
+                Move_Jump:{landed: Run,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash,s_down:Dash                              ,up_down:Up_Move_Jump},
 
-                Up_Jump: {fall: Up_Fall, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash                        ,up_up:Jump},
-                Up_Move_Jump: {fall: UP_Move_Fall, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump,x_down:Up_Move_Slash,s_down:Up_Dash                   ,up_up:Move_Jump},
+                Up_Jump: {landed: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash                        ,up_up:Jump},
+                Up_Move_Jump: {landed: Up_Run, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump,x_down:Up_Move_Slash,s_down:Up_Dash                   ,up_up:Move_Jump},
 
                 Fall:{landed: Idle,right_down: Move_Fall, left_down: Move_Fall, right_up: Move_Fall,left_up: Move_Fall, x_down: Slash   ,up_down:Up_Fall},
                 Move_Fall: {landed: Run, right_down: Fall, left_down: Fall, right_up: Fall,left_up: Fall, x_down: Move_Slash      ,up_down:UP_Move_Fall},
@@ -804,6 +804,14 @@ class Knight:
     def update(self):
         self.state_machine.update()
 
+        if self.on_ground:  # 현재 지면에 있는 상태라면
+            tile_below = server.map.get_tile_below(self)  # 캐릭터 아래 타일 확인 (구현 필요)
+            if not tile_below:  # 아래에 타일이 없으면
+                self.on_ground = False  # 지면에서 떨어짐
+                if self.state_machine.cur_state not in (Fall, Move_Fall, Up_Fall, UP_Move_Fall):
+                    self.state_machine.add_event(('FALLING', 0))  # 낙하 상태로 전환
+                    print('asdfasdf')
+
         if self.jump_frame < 11:
             self.jump_frame = (self.jump_frame + FRAMES_PER_ACTION_JUMP * ACTION_PER_TIME * game_framework.frame_time)
 
@@ -811,14 +819,8 @@ class Knight:
             self.y_dir = -1
             self.jump = False
 
-        if not self.on_ground and self.jump == False:  # 아래로 이동 중일 경우
-            self.state_machine.add_event(('FALLING', 0))
 
-        if self.on_ground:
-            tile_below = game_world  # 캐릭터 아래에 타일이 있는지 확인하는 메서드 작성 필요
-            if not tile_below:  # 아래 타일이 없으면 다시 FALLING 상태로 전환
-                self.on_ground = False
-                self.state_machine.add_event(('FALLING', 0))
+
 
     def handle_event(self, event):
         self.state_machine.add_event(
@@ -860,11 +862,19 @@ class Knight:
         # fill here
         if group == 'knight:map':
             tile_top_y = other.get_top()  # 타일 객체에 get_top() 메서드가 있다고 가정
-            if self.y - 65 <= tile_top_y and not self.on_ground:  # 이미 지면에 있는 경우 중복 처리 방지
-                self.state_machine.add_event(('Landed', 0))
-                self.y = tile_top_y + 66  # 타일 위로 위치 보정
-                self.slash_eff.y = tile_top_y + 66
-                self.on_ground = True
+            if not self.on_ground and not self.jump:  # 이미 지면에 있는 경우 중복 처리 방지
+                if self.state_machine.cur_state in (Jump, Move_Jump, Up_Jump, Up_Move_Jump,
+                                                    Fall, Move_Fall, Up_Fall, UP_Move_Fall):
+                    self.state_machine.add_event(('Landed', 0))
+                    self.y = tile_top_y + 65  # 타일 위로 위치 보정
+                    self.slash_eff.y = tile_top_y + 65
+                    self.on_ground = True
+                    self.y_dir = 0
+                elif self.state_machine.cur_state in (Slash,Up_Slash,Move_Slash, Up_Move_Slash):
+                    self.y = tile_top_y + 65  # 타일 위로 위치 보정
+                    self.slash_eff.y = tile_top_y + 65
+                    self.on_ground = True
+                    self.y_dir = 0
 
         elif group == 'knight:fly' or group == 'knight:walk':
             if get_time() - self.invincibility_time > 1:

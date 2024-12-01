@@ -2,7 +2,7 @@ import time
 
 running = None
 stack = None
-
+frame_rate = 0.0
 
 def change_mode(mode):
     global stack
@@ -48,6 +48,7 @@ def run(start_mode):
     start_mode.init()
 
     global frame_time
+    global frame_rate
     frame_time = 0.0
     current_time = time.time()
     while (running):
