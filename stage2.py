@@ -3,7 +3,7 @@ import server
 
 from pico2d import *
 
-from Tile import Tile
+from tile import Tile
 
 t = [Tile(1920, 90, 1920, 90) , Tile(2400, 360, 130, 15), Tile(2940, 520, 180, 15)
      , Tile(3510, 680, 230, 15), Tile(2300, 695, 170, 20), Tile(2600, 990, 130, 15)

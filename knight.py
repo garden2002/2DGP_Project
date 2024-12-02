@@ -953,7 +953,9 @@ class Knight:
                 else:  # 상하 충돌
                     if dy_bottom < dy_top:  # 아래에서 위로 충돌
                         #self.y = other.get_bottom() - 65
-                        self.jump_frame = 12
+                        self.y_dir = -1
+                        self.jump = False
+                        self.jump_frame = 11
                     else:
                         if self.state_machine.cur_state in (Jump, Move_Jump, Up_Jump, Up_Move_Jump,
                                                             Fall, Move_Fall, Up_Fall, UP_Move_Fall):
