@@ -820,7 +820,7 @@ class Knight:
         self.action = 0
         self.face_dir = 1
         self.hp = 4
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.slash_eff = Slash_eff()
         self.dash_eff = Dash_eff()
         self.state_machine = StateMachine(self)  # 소년 객체를 위한 상태 머신인지 알려줄 필요
@@ -856,7 +856,7 @@ class Knight:
             }
         )
         if Knight.image == None:
-            Knight.image = load_image('knight.png')
+            Knight.image = load_image('./resource/knight.png')
 
     def update(self):
         self.state_machine.update()

@@ -37,12 +37,13 @@ def init():
         game_world.add_collision_pair('slash:fly', None, fly)
         game_world.add_collision_pair('knight:fly', None, fly)
 
-    server.walks.append(Walk_object(1000,130))
+    server.walks.append(Walk_object(1000))
     game_world.add_objects(server.walks, 1)
 
     for walk in server.walks:
         game_world.add_collision_pair('slash:walk', None, walk)
         game_world.add_collision_pair('knight:walk', None, walk)
+        game_world.add_collision_pair('walk:tile', walk, None)
 
 
 

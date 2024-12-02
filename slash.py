@@ -13,7 +13,7 @@ class Slash_eff:
 
     def __init__(self, x = 100, y = 200, action = 0 , face_dir = 1):
         if Slash_eff.image == None:
-            Slash_eff.image = load_image('slash.png')
+            Slash_eff.image = load_image('./resource/slash.png')
         self.x, self.y , self.action , self.face_dir = x , y , action , face_dir
         self.frame = 0
 

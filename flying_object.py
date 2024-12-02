@@ -34,11 +34,11 @@ class Flying_object:
         self.dir = -1
         self.hp = 4
         self.invincibility_time = 0
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
         self.build_behavior_tree()
         if Flying_object.image == None:
-            Flying_object.image = load_image('flying_object.png')
+            Flying_object.image = load_image('./resource/flying_object.png')
 
     def update(self):
         if self.action == 0:

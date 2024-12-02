@@ -8,9 +8,9 @@ def unindent():
     global level
     level -= 1
 
-def print_indent():
-    for i in range(level):
-        print("    ", end='')
+# def print_indent():
+#     for i in range(level):
+#         print("    ", end='')
 
 
 class BehaviorTree:

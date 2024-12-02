@@ -15,7 +15,7 @@ t = [Tile(1920, 90, 1920, 90) , Tile(2400, 360, 130, 15), Tile(2940, 520, 180, 1
 
 class Stage2:
     def __init__(self):
-        self.image = load_image('stage2.png')
+        self.image = load_image('./resource/stage2.png')
         self.cw = get_canvas_width()
         self.ch = get_canvas_height()
         self.w = self.image.w
@@ -27,6 +27,7 @@ class Stage2:
         for tile in t:
             self.tiles.append(tile)
             game_world.add_collision_pair('knight:tile', None, tile)
+            game_world.add_collision_pair('walk:tile', None, tile)
         pass
     def draw(self):
         self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
