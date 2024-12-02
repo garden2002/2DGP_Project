@@ -19,7 +19,7 @@ class Slash_eff:
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
-        if self.frame > 4:
+        if self.frame > 3:
             game_world.remove_object(self)
 
     def draw(self):
@@ -58,6 +58,7 @@ class Slash_eff:
                 draw_rectangle(sx - 40, sy, sx + 40, sy + 110)
             else:
                 draw_rectangle(sx - 110, sy - 65, sx + 30, sy + 65)
+
 
     def get_bb(self):
         if self.face_dir == 1:

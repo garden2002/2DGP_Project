@@ -569,19 +569,19 @@ class Dash:
         sy = knight.y - server.stage.window_bottom
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx, sy, 256, 128)
-            draw_rectangle(sx + 60, sy - 65, sx + 120, sy + 65)
+                int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx - 60, sy, 256, 128)
+            draw_rectangle(sx, sy - 65, sx + 60, sy + 65)
         else:
-            knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx, sy)
-            draw_rectangle(sx - 120, sy - 65, sx - 60, sy + 65)
+            knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
+            draw_rectangle(sx - 60, sy - 65, sx , sy + 65)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x + 60, knight.y - 65, knight.x + 120, knight.y + 65
+            return knight.x , knight.y - 65, knight.x + 60, knight.y + 65
         else:
-            return knight.x - 120, knight.y - 65, knight.x - 60, knight.y + 65
+            return knight.x - 60, knight.y - 65, knight.x, knight.y + 65
 
 class Up_Dash:
     @staticmethod
@@ -609,20 +609,20 @@ class Up_Dash:
         sy = knight.y - server.stage.window_bottom
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx, sy, 256, 128)
-            draw_rectangle(sx + 60, sy - 65, sx + 120, sy + 65)
+                int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx - 60, sy, 256, 128)
+            draw_rectangle(sx, sy - 65, sx + 60, sy + 65)
         else:
-            knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx, sy)
-            draw_rectangle(sx - 120, sy - 65, sx - 60, sy + 65)
+            knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
+            draw_rectangle(sx - 60, sy - 65, sx, sy + 65)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x + 60, knight.y - 65, knight.x + 120, knight.y + 65
+            return knight.x, knight.y - 65, knight.x + 60, knight.y + 65
         else:
-            return knight.x - 120, knight.y - 65, knight.x - 60, knight.y + 65
+            return knight.x - 60, knight.y - 65, knight.x, knight.y + 65
 
 class Jump:
     @staticmethod
@@ -923,40 +923,51 @@ class Knight:
         # fill here
         if group == 'knight:tile':
             left , bottom , right, top = self.get_bb()
-            if bottom + 2 > other.get_top() > bottom and right > other.get_left() and left < other.get_right():
-                if self.state_machine.cur_state in (Jump, Move_Jump, Up_Jump, Up_Move_Jump,
-                                                    Fall, Move_Fall, Up_Fall, UP_Move_Fall):
-                    self.state_machine.add_event(('Landed', 0))
-                    self.y = other.get_top() + 65  # 타일 위로 위치 보정
-                    self.slash_eff.y = other.get_top() + 65
-                    self.on_ground = True
-                    self.y_dir = 0
-                elif self.state_machine.cur_state in (Slash, Up_Slash, Move_Slash, Up_Move_Slash):
-                    y_offset = 64 if self.action == 0 else 0
-                    self.y = other.get_top() + 65  # 타일 위로 위치 보정
-                    self.slash_eff.y = other.get_top() + 65 + y_offset
-                    self.on_ground = True
-                    self.y_dir = 0
-            elif top + 1 > other.get_bottom() > bottom and right > other.get_left() and left < other.get_right():# 아래 -> 위
-                if right - 10 < other.get_left():
-                    pass
-                elif left + 10 > other.get_right():
-                    pass
-                else:
-                    self.y = other.get_bottom() - 65
-                    self.jump_frame = 12
-
-            elif top > other.get_bottom() and bottom < other.get_top() and right > other.get_left() > left:  # 왼 -> 오
-                if bottom + 4 > other.get_top() > bottom and right > other.get_left() and left < other.get_right():
-                    pass
-                else:
-                    self.x = other.get_left() - (self.x - left)
-
-            elif top > other.get_bottom() and bottom < other.get_top() and right > other.get_right() > left:  # 오 -> 왼
-                if bottom + 2 > other.get_top() > bottom and right > other.get_left() and left < other.get_right():
-                    pass
-                else:
-                    self.x = other.get_right() + (right - self.x)
+            if self.state_machine.cur_state in (Dash, Up_Dash):
+                top -= 30
+                bottom += 30
+            other_left, other_bottom, other_right, other_top = other.get_bb()
+            dx_left = other_right - left
+            dx_right = right - other_left
+            dy_bottom = top - other_bottom
+            dy_top = other_top - bottom
+            if dx_left > 0 and dx_right > 0 and dy_bottom > 0 and dy_top > 0:
+                min_dx = min(dx_left, dx_right)
+                min_dy = min(dy_bottom, dy_top)
+                if self.state_machine.cur_state in (Dash, Up_Dash):
+                    dash_offset = 128
+                    if dx_left < dx_right:  # 왼쪽 충돌
+                        self.x = other_right + ((right - left) / 2)
+                        self.dash_eff.x = other_right + ((right - left) / 2) + (dash_offset if self.face_dir == -1 else -dash_offset)
+                    else:  # 오른쪽 충돌
+                        self.x = other_left - ((right - left) / 2)
+                        self.dash_eff.x = other_left - ((right - left) / 2)+ (dash_offset if self.face_dir == -1 else -dash_offset)
+                elif min_dx < min_dy:  # 좌우 충돌
+                    x_offset = 64 if self.action != 0 else 0
+                    if dx_left < dx_right:  # 왼쪽 충돌
+                        self.x = other_right + ((right - left) / 2)
+                        self.slash_eff.x = other_right + ((right - left) / 2) + (x_offset if self.face_dir == 1 else -x_offset)
+                    else:  # 오른쪽 충돌
+                        self.x = other_left - ((right - left) / 2)
+                        self.slash_eff.x = other_left - ((right - left) / 2) + (x_offset if self.face_dir == 1 else -x_offset)
+                else:  # 상하 충돌
+                    if dy_bottom < dy_top:  # 아래에서 위로 충돌
+                        #self.y = other.get_bottom() - 65
+                        self.jump_frame = 12
+                    else:
+                        if self.state_machine.cur_state in (Jump, Move_Jump, Up_Jump, Up_Move_Jump,
+                                                            Fall, Move_Fall, Up_Fall, UP_Move_Fall):
+                            self.state_machine.add_event(('Landed', 0))
+                            self.y = other_top + 65  # 타일 위로 위치 보정
+                            self.slash_eff.y = other_top + 65
+                            self.on_ground = True
+                            self.y_dir = 0
+                        elif self.state_machine.cur_state in (Slash, Up_Slash, Move_Slash, Up_Move_Slash):
+                            y_offset = 64 if self.action == 0 else 0
+                            self.y = other_top + 65  # 타일 위로 위치 보정
+                            self.slash_eff.y = other_top + 65 + y_offset
+                            self.on_ground = True
+                            self.y_dir = 0
 
         elif group == 'knight:fly' or group == 'knight:walk':
             if get_time() - self.invincibility_time > 1:

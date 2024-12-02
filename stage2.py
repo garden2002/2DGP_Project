@@ -41,8 +41,9 @@ class Stage2:
 
     def get_tile_below(self , knight):
         for tile in self.tiles:  # 타일 리스트를 순회
-            if tile.get_left() < knight.x - 30 < tile.get_right() or tile.get_left() < knight.x + 30 < tile.get_right():  # 캐릭터가 타일 위에 있는 경우
-                if tile.get_top() <= knight.y - 65 <= tile.get_top() + 10:  # 타일 위 10픽셀 이내
+            left , bottom , right , top = tile.get_bb()
+            if left < knight.x - 30 < right or left < knight.x + 30 < right:  # 캐릭터가 타일 위에 있는 경우
+                if top <= knight.y - 65 <= top + 10:  # 타일 위 10픽셀 이내
                     return tile
         return None
 
