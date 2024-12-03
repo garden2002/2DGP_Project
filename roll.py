@@ -94,17 +94,29 @@ class Roll:
             self.image.clip_draw(int(self.frame) * 140, self.action * 140, 140, 140, sx, sy)
 
         if math.cos(self.dir) > 0:
-            draw_rectangle(sx - 40, sy - 70, sx + 70, sy + 70)
+            if self.action == 1:
+                draw_rectangle(sx - 20, sy - 60, sx + 60, sy + 10)
+            else:
+                draw_rectangle(sx - 40, sy - 60, sx + 60, sy + 10)
         else:
-            draw_rectangle(sx - 70, sy - 70, sx + 40, sy + 70)
+            if self.action == 1:
+                draw_rectangle(sx - 60, sy - 60, sx + 20, sy + 10)
+            else:
+                draw_rectangle(sx - 60, sy - 60, sx + 40, sy + 10)
 
         self.font.draw(sx - 10, sy + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def get_bb(self):
         if self.dir == 1:
-            return self.x - 40, self.y - 70, self.x + 70, self.y + 70
+            if self.action == 1:
+                return self.x - 20, self.y - 60, self.x + 60, self.y + 10
+            else:
+                return self.x - 40, self.y - 60, self.x + 60, self.y + 10
         else:
-            return self.x - 70, self.y - 70, self.x + 40, self.y + 70
+            if self.action == 0:
+                return self.x - 60, self.y - 60, self.x + 20, self.y + 10
+            else:
+                return self.x - 60, self.y - 60, self.x + 40, self.y + 10
 
     def handle_collision(self, group, other):
         if group == 'slash:roll':
@@ -133,7 +145,7 @@ class Roll:
                     else:  # 오른쪽 충돌
                         self.x = other_left - ((right - left) / 2)
                 else:
-                    self.y = other_top + 70  # 타일 위로 위치 보정
+                    self.y = other_top + 60  # 타일 위로 위치 보정
                     self.on_ground = True
                     self.y_dir = 0
 

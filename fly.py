@@ -105,7 +105,6 @@ class Flying_object:
 
     def move_slightly_to(self, tx, ty):
         self.dir = math.atan2(ty -self.y ,tx - self.x)
-        print(self.dir)
         distance = RUN_SPEED_PPS * game_framework.frame_time
         if self.back_y <= 0:
             self.y += distance * math.sin(self.dir)

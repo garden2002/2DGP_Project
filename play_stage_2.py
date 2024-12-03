@@ -22,7 +22,15 @@ def handle_events():
 
 
 def init():
-    server.knight = Knight()
+    server.knight = None
+    server.stage = None
+    server.flies = []
+    server.walks = []
+    server.overloads = []
+    server.rolls = []
+    server.map = None
+
+    server.knight = Knight(2,True)
     game_world.add_object(server.knight, 2)
     game_world.add_collision_pair('knight:tile', server.knight, None)
     game_world.add_collision_pair('knight:fly', server.knight, None)
@@ -73,6 +81,7 @@ def draw():
     update_canvas()
 
 def pause():
+
     pass
 
 def resume():

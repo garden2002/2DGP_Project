@@ -1,5 +1,7 @@
 import random
 
+from sdl2 import SDL_KEYDOWN, SDLK_s
+
 import game_world
 from pico2d import load_image, draw_rectangle, get_time, load_font ,clamp
 
@@ -70,14 +72,14 @@ class Fall:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Fall:
+class UpFall:
     @staticmethod
     def enter(knight, e):
         knight.action = 7  # 낙하 동작의 인덱스를 8로 설정
@@ -106,14 +108,14 @@ class Up_Fall:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Move_Fall:
+class MoveFall:
     @staticmethod
     def enter(knight, e):
         if right_down(e) or left_up(e):
@@ -152,14 +154,14 @@ class Move_Fall:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class UP_Move_Fall:
+class UpMoveFall:
     @staticmethod
     def enter(knight, e):
         if right_down(e) or left_up(e):
@@ -197,12 +199,12 @@ class UP_Move_Fall:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
 class Idle:
     @staticmethod
@@ -235,13 +237,13 @@ class Idle:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Idle:
+class UpIdle:
     @staticmethod
     def enter(knight , e):
         if right_down(e) or left_up(e):
@@ -274,12 +276,12 @@ class Up_Idle:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
 class Run:
     @staticmethod
@@ -292,7 +294,6 @@ class Run:
             knight.face_dir = -1
             knight.x_dir = -1
             pass
-
         if not up_up(e):
             knight.action = 3
             knight.frame = 0
@@ -320,14 +321,14 @@ class Run:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Run:
+class UpRun:
     @staticmethod
     def enter(knight , e):
         if right_down(e) or left_up(e):
@@ -367,12 +368,12 @@ class Up_Run:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
 class Slash:
     @staticmethod
@@ -405,13 +406,13 @@ class Slash:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Slash:
+class UpSlash:
     @staticmethod
     def enter(knight , e):
         if x_down(e):
@@ -441,14 +442,14 @@ class Up_Slash:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx + 16,
                                        sy)
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Move_Slash:
+class MoveSlash:
     @staticmethod
     def enter(knight , e):
         if right_down(e) or left_up(e):
@@ -489,14 +490,14 @@ class Move_Slash:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Move_Slash:
+class UpMoveSlash:
     @staticmethod
     def enter(knight , e):
         if right_down(e) or left_up(e):
@@ -536,12 +537,12 @@ class Up_Move_Slash:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx + 16,
                                        sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 65)
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 65
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
 class Dash:
     @staticmethod
@@ -570,20 +571,20 @@ class Dash:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx - 60, sy, 256, 128)
-            draw_rectangle(sx, sy - 65, sx + 60, sy + 65)
+            draw_rectangle(sx, sy - 65, sx + 60, sy + 40)
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
-            draw_rectangle(sx - 60, sy - 65, sx , sy + 65)
+            draw_rectangle(sx - 60, sy - 65, sx , sy + 40)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x , knight.y - 65, knight.x + 60, knight.y + 65
+            return knight.x , knight.y - 65, knight.x + 60, knight.y + 40
         else:
-            return knight.x - 60, knight.y - 65, knight.x, knight.y + 65
+            return knight.x - 60, knight.y - 65, knight.x, knight.y + 40
 
-class Up_Dash:
+class UpDash:
     @staticmethod
     def enter(knight , e):
         if s_down(e):
@@ -610,19 +611,19 @@ class Up_Dash:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx - 60, sy, 256, 128)
-            draw_rectangle(sx, sy - 65, sx + 60, sy + 65)
+            draw_rectangle(sx, sy - 65, sx + 60, sy + 40)
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
-            draw_rectangle(sx - 60, sy - 65, sx, sy + 65)
+            draw_rectangle(sx - 60, sy - 65, sx, sy + 40)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x, knight.y - 65, knight.x + 60, knight.y + 65
+            return knight.x, knight.y - 65, knight.x + 60, knight.y + 40
         else:
-            return knight.x - 60, knight.y - 65, knight.x, knight.y + 65
+            return knight.x - 60, knight.y - 65, knight.x, knight.y + 40
 
 class Jump:
     @staticmethod
@@ -650,22 +651,22 @@ class Jump:
         sy = knight.y - server.stage.window_bottom
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
-            draw_rectangle(sx - 10, sy - 65, sx + 50, sy + 65)
+                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
-            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx, sy)
-            draw_rectangle(sx - 50, sy - 65, sx + 10, sy + 65)
+            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
         else:
-            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Move_Jump:
+class MoveJump:
     @staticmethod
     def enter(knight , e):
         if right_down(e) or left_up(e):
@@ -694,28 +695,29 @@ class Move_Jump:
             if knight.y_dir > -2.5:
                 knight.y_dir += -0.0098
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+
     @staticmethod
     def draw(knight):
         sx = knight.x - server.stage.window_left
         sy = knight.y - server.stage.window_bottom
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
-            draw_rectangle(sx - 10, sy - 65, sx + 50, sy + 65)
+                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
-            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx, sy)
-            draw_rectangle(sx - 50, sy - 65, sx + 10, sy + 65)
+            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
         else:
-            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Jump:
+class UpJump:
     @staticmethod
     def enter(knight , e):
         if z_down(e):
@@ -741,22 +743,22 @@ class Up_Jump:
         sy = knight.y - server.stage.window_bottom
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
-            draw_rectangle(sx - 10, sy - 65, sx + 50, sy + 65)
+                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
-            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx, sy)
-            draw_rectangle(sx - 50, sy - 65, sx + 10, sy + 65)
+            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
         else:
-            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
-class Up_Move_Jump:
+class UpMoveJump:
     @staticmethod
     def enter(knight , e):
         if right_down(e) or left_up(e):
@@ -791,68 +793,73 @@ class Up_Move_Jump:
         sy = knight.y - server.stage.window_bottom
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
-                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
-            draw_rectangle(sx - 10, sy - 65, sx + 50, sy + 65)
+                int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
-            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx, sy)
-            draw_rectangle(sx - 50, sy - 65, sx + 10, sy + 65)
+            knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
+            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
         knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
-            return knight.x - 10, knight.y - 65, knight.x + 50, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
         else:
-            return knight.x - 50, knight.y - 65, knight.x + 10, knight.y + 65
+            return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
 class Knight:
     image = None
-    def __init__(self):
-        self.x, self.y = 100 , 400
+    def __init__(self,stage = 1 , dash = False):
+        self.x, self.y = 100 , 300
         self.frame = 0
         self.jump_frame = 0
         self.jump = False
         self.on_ground = False
+        self.dash = dash
         self.invincibility_time = 0
-        self.x_dir = 0
+        self.x_dir = 1
         self.y_dir = -1
         self.action = 0
         self.face_dir = 1
+        self.stage = stage
         self.hp = 4
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.slash_eff = Slash_eff()
         self.dash_eff = Dash_eff()
         self.state_machine = StateMachine(self)  # 소년 객체를 위한 상태 머신인지 알려줄 필요
-        self.state_machine.start(Fall)
+        if self.stage == 1:
+            self.state_machine.start(Idle)
+        else:
+            self.state_machine.start(Run)
         self.state_machine.set_transitions(
             {
-                Idle:{fall: Fall,right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:Up_Idle},
-                Up_Idle: {fall: Up_Fall,right_down: Up_Run, left_down: Up_Run, left_up: Up_Run, right_up: Up_Run, x_down: Up_Slash, z_down: Up_Jump,up_up:Idle},
+                Idle:{fall: Fall, right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:UpIdle},
+                UpIdle: {fall: UpFall, right_down: UpRun, left_down: UpRun, left_up: UpRun, right_up: UpRun, x_down: UpSlash, z_down: UpJump, up_up:Idle},
 
-                Run: {fall: Move_Fall,right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: Move_Slash ,s_down:Dash, z_down: Move_Jump, up_down:Up_Run},
-                Up_Run: {fall: UP_Move_Fall ,right_down: Up_Idle, left_down: Up_Idle, right_up: Up_Idle, left_up: Up_Idle, x_down: Up_Move_Slash, s_down:Up_Dash, z_down: Up_Move_Jump,up_up:Run},
+                Run: {fall: MoveFall, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: MoveSlash , s_down:Dash, z_down: MoveJump, up_down:UpRun},
+                UpRun: {fall: UpMoveFall , right_down: UpIdle, left_down: UpIdle, right_up: UpIdle, left_up: UpIdle, x_down: UpMoveSlash, s_down:UpDash, z_down: UpMoveJump, up_up:Run},
 
-                Slash:{end_motion: Idle , right_down: Move_Slash, left_down: Move_Slash, right_up: Move_Slash, left_up: Move_Slash ,up_down:Up_Slash },
-                Move_Slash:{end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash ,up_down:Up_Move_Slash},
+                Slash:{end_motion: Idle , right_down: MoveSlash, left_down: MoveSlash, right_up: MoveSlash, left_up: MoveSlash , up_down:UpSlash},
+                MoveSlash:{end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash , up_down:UpMoveSlash},
 
-                Up_Slash:{end_motion: Up_Idle , right_down: Up_Move_Slash, left_down: Up_Move_Slash, right_up: Up_Move_Slash, left_up: Up_Move_Slash ,up_up:Slash},
-                Up_Move_Slash: {end_motion: Up_Run, right_down: Up_Slash, left_down: Up_Slash,right_up: Up_Slash, left_up: Up_Slash , up_up:Move_Slash},
+                UpSlash:{end_motion: UpIdle , right_down: UpMoveSlash, left_down: UpMoveSlash, right_up: UpMoveSlash, left_up: UpMoveSlash , up_up:Slash},
+                UpMoveSlash: {end_motion: UpRun, right_down: UpSlash, left_down: UpSlash, right_up: UpSlash, left_up: UpSlash , up_up:MoveSlash},
 
-                Dash:{end_motion: Run ,right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle,up_down:Up_Dash},
-                Up_Dash: {end_motion: Up_Run,right_down: Up_Idle, left_down: Up_Idle, left_up: Up_Idle, right_up: Up_Idle, up_up:Dash},
+                Dash:{end_motion: Run , right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle, up_down:UpDash},
+                UpDash: {end_motion: UpRun, right_down: UpIdle, left_down: UpIdle, left_up: UpIdle, right_up: UpIdle, up_up:Dash},
 
-                Jump:{landed: Idle ,right_down: Move_Jump, left_down: Move_Jump, right_up: Move_Jump, left_up: Move_Jump,x_down:Slash                ,up_down:Up_Jump},
-                Move_Jump:{landed: Run,right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump,x_down:Move_Slash,s_down:Dash                              ,up_down:Up_Move_Jump},
+                Jump:{landed: Idle , right_down: MoveJump, left_down: MoveJump, right_up: MoveJump, left_up: MoveJump, x_down:Slash                , up_down:UpJump},
+                MoveJump:{landed: Run, right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump, x_down:MoveSlash, s_down:Dash                              , up_down:UpMoveJump},
 
-                Up_Jump: {landed: Up_Idle, right_down: Up_Move_Jump, left_down: Up_Move_Jump, right_up: Up_Move_Jump,left_up: Up_Move_Jump,x_down:Up_Slash                        ,up_up:Jump},
-                Up_Move_Jump: {landed: Up_Run, right_down: Up_Jump, left_down: Up_Jump, right_up: Up_Jump, left_up: Up_Jump,x_down:Up_Move_Slash,s_down:Up_Dash                   ,up_up:Move_Jump},
+                UpJump: {landed: UpIdle, right_down: UpMoveJump, left_down: UpMoveJump, right_up: UpMoveJump, left_up: UpMoveJump, x_down:UpSlash                        , up_up:Jump},
+                UpMoveJump: {landed: UpRun, right_down: UpJump, left_down: UpJump, right_up: UpJump, left_up: UpJump, x_down:UpMoveSlash, s_down:UpDash                   , up_up:MoveJump},
 
-                Fall:{landed: Idle,right_down: Move_Fall, left_down: Move_Fall, right_up: Move_Fall,left_up: Move_Fall, x_down: Slash   ,up_down:Up_Fall},
-                Move_Fall: {landed: Run, right_down: Fall, left_down: Fall, right_up: Fall,left_up: Fall, x_down: Move_Slash,s_down:Dash     ,up_down:UP_Move_Fall},
+                Fall:{landed: Idle, right_down: MoveFall, left_down: MoveFall, right_up: MoveFall, left_up: MoveFall, x_down: Slash   , up_down:UpFall},
+                MoveFall: {landed: Run, right_down: Fall, left_down: Fall, right_up: Fall, left_up: Fall, x_down: MoveSlash, s_down:Dash     , up_down:UpMoveFall},
 
-                Up_Fall: {landed: Up_Idle,right_down: UP_Move_Fall, left_down: UP_Move_Fall, right_up: UP_Move_Fall,left_up: UP_Move_Fall, x_down: Up_Slash  ,up_up:Fall},
-                UP_Move_Fall: {landed: Up_Run,right_down: Up_Fall, left_down: Up_Fall, right_up: Up_Fall,left_up: Up_Fall, x_down: Up_Move_Slash,s_down:Up_Dash  ,up_up:Move_Fall},
+                UpFall: {landed: UpIdle, right_down: UpMoveFall, left_down: UpMoveFall, right_up: UpMoveFall, left_up: UpMoveFall, x_down: UpSlash  , up_up:Fall},
+                UpMoveFall: {landed: UpRun, right_down: UpFall, left_down: UpFall, right_up: UpFall, left_up: UpFall, x_down: UpMoveSlash, s_down:UpDash  , up_up:MoveFall},
             }
         )
         if Knight.image == None:
@@ -865,8 +872,8 @@ class Knight:
             tile_below = server.stage.get_tile_below(self)  # 캐릭터 아래 타일 확인 (구현 필요)
             if not tile_below:  # 아래에 타일이 없으면
                 self.on_ground = False  # 지면에서 떨어짐
-                if self.state_machine.cur_state not in (Fall, Move_Fall, Up_Fall, UP_Move_Fall):
-                    if self.state_machine.cur_state in (Slash,Up_Slash,Move_Slash, Up_Move_Slash):
+                if self.state_machine.cur_state not in (Fall, MoveFall, UpFall, UpMoveFall):
+                    if self.state_machine.cur_state in (Slash, UpSlash, MoveSlash, UpMoveSlash):
                         self.y_dir = -1
                     self.state_machine.add_event(('FALLING', 0))  # 낙하 상태로 전환
 
@@ -886,6 +893,8 @@ class Knight:
             self.jump_frame = 9
 
     def handle_event(self, event):
+        #if event[1].type == SDL_KEYDOWN and event[1].key == SDLK_s and self.dash == False:
+            #return
         self.state_machine.add_event(
             ('INPUT', event)
         )
@@ -925,7 +934,7 @@ class Knight:
         # fill here
         if group == 'knight:tile':
             left , bottom , right, top = self.get_bb()
-            if self.state_machine.cur_state in (Dash, Up_Dash):
+            if self.state_machine.cur_state in (Dash, UpDash):
                 top -= 30
                 bottom += 30
             other_left, other_bottom, other_right, other_top = other.get_bb()
@@ -936,7 +945,7 @@ class Knight:
             if dx_left > 0 and dx_right > 0 and dy_bottom > 0 and dy_top > 0:
                 min_dx = min(dx_left, dx_right)
                 min_dy = min(dy_bottom, dy_top)
-                if self.state_machine.cur_state in (Dash, Up_Dash):
+                if self.state_machine.cur_state in (Dash, UpDash):
                     dash_offset = 128
                     if dx_left < dx_right:  # 왼쪽 충돌
                         self.x = other_right + ((right - left) / 2)
@@ -959,27 +968,31 @@ class Knight:
                         self.jump = False
                         self.jump_frame = 11
                     else:
-                        if self.state_machine.cur_state in (Jump, Move_Jump, Up_Jump, Up_Move_Jump,
-                                                            Fall, Move_Fall, Up_Fall, UP_Move_Fall):
-                            self.state_machine.add_event(('Landed', 0))
-                            self.y = other_top + 65  # 타일 위로 위치 보정
-                            self.slash_eff.y = other_top + 65
-                            self.on_ground = True
-                            self.y_dir = 0
-                        elif self.state_machine.cur_state in (Slash, Up_Slash, Move_Slash, Up_Move_Slash):
+                        if self.state_machine.cur_state in (Jump, MoveJump, UpJump, UpMoveJump,
+                                                            Fall, MoveFall, UpFall, UpMoveFall):
+                            if not self.jump:
+                                self.state_machine.add_event(('Landed', 0))
+                                self.y = other_top + 65  # 타일 위로 위치 보정
+                                self.slash_eff.y = other_top + 65
+                                self.on_ground = True
+                                self.y_dir = 0
+                        elif self.state_machine.cur_state in (Slash, UpSlash, MoveSlash, UpMoveSlash):
                             y_offset = 64 if self.action == 0 else 0
                             self.y = other_top + 65  # 타일 위로 위치 보정
                             self.slash_eff.y = other_top + 65 + y_offset
                             self.on_ground = True
                             self.y_dir = 0
 
-        elif group == 'knight:fly' or group == 'knight:walk':
+        elif group == 'knight:fly' or group == 'knight:walk'or group == 'knight:roll'or group == 'knight:overload':
             if get_time() - self.invincibility_time > 1:
                 self.invincibility_time = get_time()
                 self.hp -= 1
                 if self.hp < 1:
                     self.state_machine.add_event(('Die', 0))
 
-        pass
+        elif group == 'knight:goal':
+            if other.stage == 1:
+                self.stage = 2
+            pass
 
 

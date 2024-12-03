@@ -5,7 +5,7 @@ from pico2d import *
 
 from tile import Tile
 
-t = [Tile(1920, 90, 1920, 90) , Tile(2400, 360, 130, 15), Tile(2940, 520, 180, 15)
+t2 = [Tile(1920, 90, 1920, 90) , Tile(2400, 360, 130, 15), Tile(2940, 520, 180, 15)
      , Tile(3510, 680, 230, 15), Tile(2300, 695, 170, 20), Tile(2600, 990, 130, 15)
      , Tile(940, 740, 1000, 90),Tile(590, 1000, 130, 15), Tile(1020, 1140, 130, 20)
      , Tile(190, 1180, 130, 20), Tile(520, 1300, 130, 20), Tile(1470, 1365, 170, 20)
@@ -26,7 +26,7 @@ class Stage2:
         self.window_bottom = clamp(0, int(server.knight.y) - self.ch // 2, self.h - self.ch - 1)
 
     def load_tiles(self):
-        for tile in t:
+        for tile in t2:
             self.tiles.append(tile)
             game_world.add_collision_pair('knight:tile', None, tile)
             game_world.add_collision_pair('walk:tile', None, tile)
