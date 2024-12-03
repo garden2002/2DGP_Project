@@ -1,8 +1,6 @@
 # event (종류 문자열 , 실제 값)
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x, SDLK_UP, SDLK_s
 
-
-
 def fall(e):
     return e[0] == 'FALLING'
 

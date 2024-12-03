@@ -4,9 +4,7 @@ import game_framework
 import game_world
 import server
 from pico2d import *
-
 from behavior_tree import BehaviorTree, Action, Sequence, Selector, Condition
-from state_machine import StateMachine, die
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 15.0  # Km / Hour
@@ -31,6 +29,8 @@ class Flying_object:
         self.x, self.y = x, y
         self.action = 0
         self.frame = 0
+        self.back_x = 0
+        self.back_y = 0
         self.dir = -1
         self.hp = 4
         self.invincibility_time = 0
@@ -38,7 +38,7 @@ class Flying_object:
         self.die = False
         self.build_behavior_tree()
         if Flying_object.image == None:
-            Flying_object.image = load_image('./resource/flying_object.png')
+            Flying_object.image = load_image('./resource/fly.png')
 
     def update(self):
         if self.action == 0:
@@ -47,6 +47,18 @@ class Flying_object:
             self.frame = (self.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * game_framework.frame_time) % 4
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+
+        if self.back_y > 0:
+            self.y += RUN_SPEED_PPS * game_framework.frame_time
+            self.back_y -= 1
+
+        if self.back_x > 0:
+            if math.cos(self.dir) > 0:
+                self.x += -2 * RUN_SPEED_PPS * game_framework.frame_time
+            else:
+                self.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
+            self.back_x -= 1
+
         self.bt.run()
 
     def handle_event(self, event):
@@ -80,6 +92,8 @@ class Flying_object:
             if get_time() - self.invincibility_time > 0.6:
                  self.invincibility_time = get_time()
                  self.hp -= 1
+                 self.back_x = 100
+                 self.back_y = 70
                  if self.hp < 1:
                     self.die = True
                     self.frame = 0
@@ -93,8 +107,11 @@ class Flying_object:
         self.dir = math.atan2(ty -self.y ,tx - self.x)
         print(self.dir)
         distance = RUN_SPEED_PPS * game_framework.frame_time
-        self.x += distance * math.cos(self.dir)
-        self.y += distance * math.sin(self.dir)
+        if self.back_y <= 0:
+            self.y += distance * math.sin(self.dir)
+        if self.back_x <= 0:
+            self.x += distance * math.cos(self.dir)
+
         pass
 
     def set_idle(self):

@@ -5,5 +5,7 @@ knight = None
 stage = None
 flies = []
 walks = []
+overloads = []
+rolls = []
 map = None
 

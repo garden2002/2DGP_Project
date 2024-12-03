@@ -12,7 +12,7 @@ from state_machine import (right_down, left_up, left_down, right_up, start_event
 
 PIXEL_PER_METER = (10.0 / 0.2)
 
-RUN_SPEED_KMPH = 20.0
+RUN_SPEED_KMPH = 30.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -904,6 +904,8 @@ class Knight:
         game_world.add_object(self.slash_eff, 2)
         game_world.add_collision_pair('slash:fly', self.slash_eff, None)
         game_world.add_collision_pair('slash:walk', self.slash_eff, None)
+        game_world.add_collision_pair('slash:overload', self.slash_eff, None)
+        game_world.add_collision_pair('slash:roll', self.slash_eff, None)
 
     def knight_dash(self):
         self.dash_eff = Dash_eff()

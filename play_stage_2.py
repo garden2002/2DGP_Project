@@ -2,10 +2,12 @@ from pico2d import *
 
 import game_framework
 import game_world
-from flying_object import Flying_object
+from fly import Flying_object
 from knight import Knight
+from overload import Overload
+from roll import Roll
 from stage2 import Stage2
-from walk_object import Walk_object
+from walk import Walk_object
 import server
 
 def handle_events():
@@ -20,15 +22,13 @@ def handle_events():
 
 
 def init():
-    server.stage = Stage2()
-    game_world.add_object(server.stage, 0)
-
-
     server.knight = Knight()
-    game_world.add_object(server.knight, 1)
+    game_world.add_object(server.knight, 2)
     game_world.add_collision_pair('knight:tile', server.knight, None)
     game_world.add_collision_pair('knight:fly', server.knight, None)
     game_world.add_collision_pair('knight:walk', server.knight, None)
+    game_world.add_collision_pair('knight:overload', server.knight, None)
+    game_world.add_collision_pair('knight:roll', server.knight, None)
 
     server.flies.append(Flying_object())
     server.flies.append(Flying_object(300, 150))
@@ -39,13 +39,27 @@ def init():
 
     server.walks.append(Walk_object(1000))
     game_world.add_objects(server.walks, 1)
-
     for walk in server.walks:
         game_world.add_collision_pair('slash:walk', None, walk)
         game_world.add_collision_pair('knight:walk', None, walk)
         game_world.add_collision_pair('walk:tile', walk, None)
 
 
+    server.overloads.append(Overload(1000 , 300))
+    game_world.add_objects(server.overloads, 1)
+    for overload in server.overloads:
+        game_world.add_collision_pair('slash:overload', None, overload)
+        game_world.add_collision_pair('knight:overload', None, overload)
+
+    server.rolls.append(Roll(1000, 300))
+    game_world.add_objects(server.rolls, 1)
+    for roll in server.rolls:
+        game_world.add_collision_pair('slash:roll', None, roll)
+        game_world.add_collision_pair('knight:roll', None, roll)
+        game_world.add_collision_pair('roll:tile', roll, None)
+
+    server.stage = Stage2()
+    game_world.add_object(server.stage, 0)
 
 def update():
     game_world.update()

@@ -1,6 +1,3 @@
-from pico2d import *
-import server
-
 class Tile:
     def __init__(self, x, y,x_size ,y_size):
         self.x = x

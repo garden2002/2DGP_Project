@@ -4,33 +4,29 @@ import game_world
 from pico2d import *
 import server
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
-from state_machine import StateMachine, die
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
-WALK_SPEED_KMPH = 10.0
-WALK_SPEED_MPM = (WALK_SPEED_KMPH * 1000.0 / 60.0)
-WALK_SPEED_MPS = (WALK_SPEED_MPM / 60.0)
-WALK_SPEED_PPS = (WALK_SPEED_MPS * PIXEL_PER_METER)
 
-RUN_SPEED_KMPH = 20.0
+RUN_SPEED_KMPH = 30.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION_WALK = 7
-FRAMES_PER_ACTION_RUN = 4
-FRAMES_PER_ACTION_DIE = 8
+FRAMES_PER_ACTION_IDLE = 4
+FRAMES_PER_ACTION_RUN = 6
+FRAMES_PER_ACTION_DIE = 4
 
 
-class Walk_object:
+class Roll:
     image = None
     def __init__(self, x = 700, y= 500):
         self.x, self.y = x, y
         self.action = 0
         self.frame = 0
+        self.back_x = 0
+        self.back_y = 0
         self.dir = -1
         self.hp = 4
         self.y_dir = 0
@@ -39,17 +35,17 @@ class Walk_object:
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
         self.build_behavior_tree()
-        if Walk_object.image == None:
-            Walk_object.image = load_image('./resource/walk_object.png')
+        if Roll.image == None:
+            Roll.image = load_image('./resource/roll.png')
 
         self.patrol_locations = [(self.x - 200 ,self.y), (self.x + 200,self.y)]
         self.loc_no = 0
 
     def update(self):
         if self.action == 0:
-            self.frame = (self.frame + FRAMES_PER_ACTION_WALK * ACTION_PER_TIME * game_framework.frame_time) % 7
-        elif self.action == 2:
-            self.frame = (self.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * game_framework.frame_time) % 4
+            self.frame = (self.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 4
+        elif self.action == 1:
+            self.frame = (self.frame + FRAMES_PER_ACTION_RUN * ACTION_PER_TIME * game_framework.frame_time) % 3
         else:
             self.frame = (self.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
 
@@ -60,15 +56,26 @@ class Walk_object:
 
         if not self.on_ground:
             self.y_dir = -1
-        self.y += self.y_dir * RUN_SPEED_PPS * game_framework.frame_time
-        for i in range(len(self.patrol_locations)):
-            x, y = self.patrol_locations[i]  # 기존 튜플의 요소를 언패킹
-            self.patrol_locations[i] = (x, self.y)  # 새로운 튜플 생성
-
-        print(self.y)
-        print(self.x)
+        if self.back_y <= 0:
+            self.y += self.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         if self.y_dir > - 2.5:
             self.y_dir += -0.0098
+
+        for i in range(len(self.patrol_locations)):
+            x, y = self.patrol_locations[i]
+            self.patrol_locations[i] = (x, self.y)
+
+        if self.back_y > 0:
+            self.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
+            self.back_y -= 1
+
+        if self.back_x > 0:
+            if math.cos(self.dir) > 0:
+                self.x += -2 * RUN_SPEED_PPS * game_framework.frame_time
+            else:
+                self.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
+            self.back_x -= 1
+
         self.bt.run()
 
     def handle_event(self, event):
@@ -100,15 +107,17 @@ class Walk_object:
             return self.x - 70, self.y - 70, self.x + 40, self.y + 70
 
     def handle_collision(self, group, other):
-        if group == 'slash:walk':
+        if group == 'slash:roll':
             if get_time() - self.invincibility_time > 0.6:
                 self.invincibility_time = get_time()
                 self.hp -= 1
+                self.back_x = 80
+                self.back_y = 50
                 if self.hp < 1:
                     self.die = True
                     self.frame = 0
 
-        elif group == 'walk:tile':
+        elif group == 'roll:tile':
             left, bottom, right, top = self.get_bb()
             other_left, other_bottom, other_right, other_top = other.get_bb()
             dx_left = other_right - left
@@ -119,7 +128,6 @@ class Walk_object:
                 min_dx = min(dx_left, dx_right)
                 min_dy = min(dy_bottom, dy_top)
                 if min_dx < min_dy:  # 좌우 충돌
-                    x_offset = 64 if self.action != 0 else 0
                     if dx_left < dx_right:  # 왼쪽 충돌
                         self.x = other_right + ((right - left) / 2)
                     else:  # 오른쪽 충돌
@@ -138,22 +146,21 @@ class Walk_object:
     def move_slightly_to(self, tx, ty):
         self.tx, self.ty = self.patrol_locations[self.loc_no]
         self.dir = math.atan2(ty - self.y, tx - self.x)
-        distance = WALK_SPEED_PPS * game_framework.frame_time
-        self.x += distance * math.cos(self.dir)
+        distance = RUN_SPEED_PPS * game_framework.frame_time
+        if self.back_x <= 0:
+            self.x += distance * math.cos(self.dir)
         pass
 
     def move_to(self, r=0.5):
-        self.action = 0
         self.move_slightly_to(self.tx, self.ty)
         if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
 
-    def get_patrol_location(self):
-        self.tx, self.ty = self.patrol_locations[self.loc_no]
-        self.loc_no = (self.loc_no + 1) % len(self.patrol_locations)
-        return BehaviorTree.SUCCESS
+
+    def set_idle(self):
+        self.action = 0
 
 
     def is_knight_nearby(self, distance):
@@ -164,7 +171,7 @@ class Walk_object:
         pass
 
     def move_to_knight(self, r=0.5):
-        self.action = 2
+        self.action = 1
         self.move_slightly_to(server.knight.x, server.knight.y)
         if self.distance_less_than(server.knight.x, server.knight.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
@@ -174,31 +181,30 @@ class Walk_object:
 
     def is_die(self):
         if self.die:
-            self.action = 1
+            self.action = 2
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
-    def die_walk(self):
-        if self.frame > 8:
+    def die_roll(self):
+        if self.frame > 4:
             game_world.remove_object(self)
 
     def build_behavior_tree(self):
 
-        a1 = Action('순찰 위치 가져오기', self.get_patrol_location)
-        a2 = Action('순찰', self.move_to)
-        patrol = Sequence('순찰', a1, a2)
+        a1 = Action('Set Idle location', self.set_idle)
+        idle = Sequence('Wander', a1)
 
         c1 = Condition('기사가 근처에 있는가?', self.is_knight_nearby, 10)
         a3 = Action('기사에게 접근', self.move_to_knight)
         chase_knight = Sequence('소년을 추적', c1, a3)
 
         c2 = Condition('죽었는가?', self.is_die)
-        a4 = Action('죽음', self.die_walk)
+        a4 = Action('죽음', self.die_roll)
 
         die_object = Sequence('죽음', c2, a4)
 
-        root = chase_or_patrol = Selector('추적 또는 배회', die_object, chase_knight, patrol)
+        root = chase_or_patrol = Selector('추적 또는 배회', die_object, chase_knight, idle)
         self.bt = BehaviorTree(root)
         pass
 

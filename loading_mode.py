@@ -1,16 +1,14 @@
-from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
-
 import game_framework
 from pico2d import load_image, get_time, clear_canvas, update_canvas, get_events
 
-import play_stage_1
+import start_mode
 
 
 def init():
     global image
     global logo_start_time
 
-    image =load_image('tuk_credit.png')
+    image =load_image('./resource/loading.png')
     logo_start_time = get_time()
 
 def finish():
@@ -21,12 +19,12 @@ def update():
     global logo_start_time
     if get_time() - logo_start_time >= 2.0:
         logo_start_time =get_time()
-        game_framework.change_mode(play_mode)
+        game_framework.change_mode(start_mode)
 
 
 def draw():
     clear_canvas()
-    image.draw(400, 300)
+    image.draw(640 , 360)
     update_canvas()
 
 

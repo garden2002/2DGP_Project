@@ -22,12 +22,15 @@ class Stage2:
         self.h = self.image.h
         self.tiles = []
         self.load_tiles()
+        self.window_left = clamp(0, int(server.knight.x) - self.cw // 2, self.w - self.cw - 1)
+        self.window_bottom = clamp(0, int(server.knight.y) - self.ch // 2, self.h - self.ch - 1)
 
     def load_tiles(self):
         for tile in t:
             self.tiles.append(tile)
             game_world.add_collision_pair('knight:tile', None, tile)
             game_world.add_collision_pair('walk:tile', None, tile)
+            game_world.add_collision_pair('roll:tile', None, tile)
         pass
     def draw(self):
         self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
