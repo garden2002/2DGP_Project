@@ -108,7 +108,7 @@ class Roll:
 
     def get_bb(self):
         if self.dir == 1:
-            if self.action == 1:
+            if self.action == 0:
                 return self.x - 20, self.y - 60, self.x + 60, self.y + 10
             else:
                 return self.x - 40, self.y - 60, self.x + 60, self.y + 10
@@ -141,9 +141,9 @@ class Roll:
                 min_dy = min(dy_bottom, dy_top)
                 if min_dx < min_dy:  # 좌우 충돌
                     if dx_left < dx_right:  # 왼쪽 충돌
-                        self.x = other_right + ((right - left) / 2)
+                        self.x = other_right + ((right - left) *  3 / 5 )
                     else:  # 오른쪽 충돌
-                        self.x = other_left - ((right - left) / 2)
+                        self.x = other_left - ((right - left) * 2 / 5)
                 else:
                     self.y = other_top + 60  # 타일 위로 위치 보정
                     self.on_ground = True
