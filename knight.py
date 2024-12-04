@@ -1,13 +1,12 @@
 import random
 
-from sdl2 import SDL_KEYDOWN, SDLK_s
-
 import game_world
 from pico2d import load_image, draw_rectangle, get_time, load_font ,clamp
 
 import game_framework
 import server
 from dash_eff import Dash_eff
+from hit_eff import Hit_eff
 from slash import Slash_eff
 from state_machine import (right_down, left_up, left_down, right_up, start_event, StateMachine, z_down, x_down,
                            end_motion, up_down, up_up, s_down, landed, fall)
@@ -810,12 +809,13 @@ class UpMoveJump:
 
 class Knight:
     image = None
-    def __init__(self,stage = 1 , dash = False):
-        self.x, self.y = 100 , 300
+    def __init__(self,stage = 1 , dash = False , state = Idle):
+        self.x, self.y = 100 ,200
         self.frame = 0
         self.jump_frame = 0
         self.jump = False
         self.on_ground = False
+        self.die = False
         self.dash = dash
         self.invincibility_time = 0
         self.x_dir = 1
@@ -823,15 +823,13 @@ class Knight:
         self.action = 0
         self.face_dir = 1
         self.stage = stage
+        self.hit_eff = Hit_eff()
         self.hp = 4
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.slash_eff = Slash_eff()
         self.dash_eff = Dash_eff()
-        self.state_machine = StateMachine(self)  # 소년 객체를 위한 상태 머신인지 알려줄 필요
-        if self.stage == 1:
-            self.state_machine.start(Idle)
-        else:
-            self.state_machine.start(Run)
+        self.state_machine = StateMachine(self)
+        self.state_machine.start(state)
         self.state_machine.set_transitions(
             {
                 Idle:{fall: Fall, right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:UpIdle},
@@ -893,8 +891,6 @@ class Knight:
             self.jump_frame = 9
 
     def handle_event(self, event):
-        #if event[1].type == SDL_KEYDOWN and event[1].key == SDLK_s and self.dash == False:
-            #return
         self.state_machine.add_event(
             ('INPUT', event)
         )
@@ -963,7 +959,6 @@ class Knight:
                         self.slash_eff.x = other_left - ((right - left) / 2) + (x_offset if self.face_dir == 1 else -x_offset)
                 else:  # 상하 충돌
                     if dy_bottom < dy_top:  # 아래에서 위로 충돌
-                        #self.y = other.get_bottom() - 65
                         self.y_dir = -1
                         self.jump = False
                         self.jump_frame = 11
@@ -984,15 +979,19 @@ class Knight:
                             self.y_dir = 0
 
         elif group == 'knight:fly' or group == 'knight:walk'or group == 'knight:roll'or group == 'knight:overload':
-            if get_time() - self.invincibility_time > 1:
+            if get_time() - self.invincibility_time > 1 and other.die == False:
                 self.invincibility_time = get_time()
                 self.hp -= 1
+                self.hit_eff = Hit_eff(self.x, self.y, self.face_dir)
+                game_world.add_object(self.hit_eff, 2)
                 if self.hp < 1:
                     self.state_machine.add_event(('Die', 0))
 
         elif group == 'knight:goal':
             if other.stage == 1:
                 self.stage = 2
+            elif other.stage == 2:
+                self.stage = 3
             pass
 
 

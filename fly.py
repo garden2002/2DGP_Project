@@ -5,6 +5,7 @@ import game_world
 import server
 from pico2d import *
 from behavior_tree import BehaviorTree, Action, Sequence, Selector, Condition
+from hit_eff import Hit_eff
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 15.0  # Km / Hour
@@ -33,6 +34,7 @@ class Flying_object:
         self.back_y = 0
         self.dir = -1
         self.hp = 4
+        self.hit_eff = Hit_eff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
@@ -90,11 +92,13 @@ class Flying_object:
     def handle_collision(self, group, other):
         if group == 'slash:fly':
             if get_time() - self.invincibility_time > 0.6:
-                 self.invincibility_time = get_time()
-                 self.hp -= 1
-                 self.back_x = 100
-                 self.back_y = 70
-                 if self.hp < 1:
+                self.invincibility_time = get_time()
+                self.hp -= 1
+                self.back_x = 100
+                self.back_y = 70
+                self.hit_eff = Hit_eff(self.x, self.y, self.dir)
+                game_world.add_object(self.hit_eff, 2)
+                if self.hp < 1:
                     self.die = True
                     self.frame = 0
             pass

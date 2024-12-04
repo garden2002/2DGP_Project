@@ -4,6 +4,7 @@ import game_world
 from pico2d import *
 import server
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+from hit_eff import Hit_eff
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 WALK_SPEED_KMPH = 10.0
@@ -35,6 +36,7 @@ class Walk_object:
         self.hp = 4
         self.y_dir = 0
         self.on_ground = False
+        self.hit_eff = Hit_eff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
@@ -66,12 +68,9 @@ class Walk_object:
             self.y_dir += -0.0098
 
         for i in range(len(self.patrol_locations)):
-            x, y = self.patrol_locations[i]
+            x , _ = self.patrol_locations[i]
             self.patrol_locations[i] = (x, self.y)
 
-        if self.back_y > 0:
-            self.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
-            self.back_y -= 1
 
         if self.back_x > 0:
             if math.cos(self.dir) > 0:
@@ -105,7 +104,7 @@ class Walk_object:
         self.font.draw(sx - 10, sy + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def get_bb(self):
-        if self.dir == 1:
+        if math.cos(self.dir) > 0:
             return self.x - 40, self.y - 70, self.x + 70, self.y + 70
         else:
             return self.x - 70, self.y - 70, self.x + 40, self.y + 70
@@ -116,7 +115,8 @@ class Walk_object:
                 self.invincibility_time = get_time()
                 self.hp -= 1
                 self.back_x = 80
-                self.back_y = 50
+                self.hit_eff = Hit_eff(self.x , self.y ,self.dir)
+                game_world.add_object(self.hit_eff, 2)
                 if self.hp < 1:
                     self.die = True
                     self.frame = 0
@@ -137,10 +137,10 @@ class Walk_object:
                     else:  # 오른쪽 충돌
                         self.x = other_left - ((right - left) * 4 / 11)
                 else:
-                    self.y = other_top + 70  # 타일 위로 위치 보정
-                    self.on_ground = True
-                    self.y_dir = 0
-
+                    if not dy_bottom < dy_top:  # 아래에서 위로 충돌
+                        self.y = other_top + 70  # 타일 위로 위치 보정
+                        self.on_ground = True
+                        self.y_dir = 0
         pass
 
     def distance_less_than(self, x1, y1, x2, y2, r):

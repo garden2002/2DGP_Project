@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import play_stage_boss
 from fly import Flying_object
 from knight import Knight
 from overload import Overload
@@ -22,21 +23,22 @@ def handle_events():
 
 
 def init():
-    server.knight = None
     server.stage = None
     server.flies = []
     server.walks = []
     server.overloads = []
     server.rolls = []
     server.map = None
-
-    server.knight = Knight(2,True)
+    before_state = server.knight.state_machine.cur_state
+    server.knight = None
+    server.knight = Knight(2,True ,before_state)
     game_world.add_object(server.knight, 2)
     game_world.add_collision_pair('knight:tile', server.knight, None)
     game_world.add_collision_pair('knight:fly', server.knight, None)
     game_world.add_collision_pair('knight:walk', server.knight, None)
     game_world.add_collision_pair('knight:overload', server.knight, None)
     game_world.add_collision_pair('knight:roll', server.knight, None)
+    game_world.add_collision_pair('knight:goal', server.knight, None)
 
     server.flies.append(Flying_object())
     server.flies.append(Flying_object(300, 150))
@@ -72,6 +74,8 @@ def init():
 def update():
     game_world.update()
     game_world.handle_collisions()
+    if server.knight.stage == 3:
+        game_framework.change_mode(play_stage_boss)
     pass
 
 

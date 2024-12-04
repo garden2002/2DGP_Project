@@ -4,6 +4,7 @@ import game_world
 from pico2d import *
 import server
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+from hit_eff import Hit_eff
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 
@@ -31,6 +32,7 @@ class Roll:
         self.hp = 4
         self.y_dir = 0
         self.on_ground = False
+        self.hit_eff = Hit_eff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
@@ -38,8 +40,6 @@ class Roll:
         if Roll.image == None:
             Roll.image = load_image('./resource/roll.png')
 
-        self.patrol_locations = [(self.x - 200 ,self.y), (self.x + 200,self.y)]
-        self.loc_no = 0
 
     def update(self):
         if self.action == 0:
@@ -56,18 +56,9 @@ class Roll:
 
         if not self.on_ground:
             self.y_dir = -1
-        if self.back_y <= 0:
-            self.y += self.y_dir * RUN_SPEED_PPS * game_framework.frame_time
+        self.y += self.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         if self.y_dir > - 2.5:
             self.y_dir += -0.0098
-
-        for i in range(len(self.patrol_locations)):
-            x, y = self.patrol_locations[i]
-            self.patrol_locations[i] = (x, self.y)
-
-        if self.back_y > 0:
-            self.y += 1 * RUN_SPEED_PPS * game_framework.frame_time
-            self.back_y -= 1
 
         if self.back_x > 0:
             if math.cos(self.dir) > 0:
@@ -124,7 +115,8 @@ class Roll:
                 self.invincibility_time = get_time()
                 self.hp -= 1
                 self.back_x = 80
-                self.back_y = 50
+                self.hit_eff = Hit_eff(self.x, self.y, self.dir)
+                game_world.add_object(self.hit_eff, 2)
                 if self.hp < 1:
                     self.die = True
                     self.frame = 0
@@ -145,10 +137,10 @@ class Roll:
                     else:  # 오른쪽 충돌
                         self.x = other_left - ((right - left) * 2 / 5)
                 else:
-                    self.y = other_top + 60  # 타일 위로 위치 보정
-                    self.on_ground = True
-                    self.y_dir = 0
-
+                    if not dy_bottom < dy_top:  # 아래에서 위로 충돌
+                        self.y = other_top + 60  # 타일 위로 위치 보정
+                        self.on_ground = True
+                        self.y_dir = 0
         pass
 
     def distance_less_than(self, x1, y1, x2, y2, r):
@@ -156,19 +148,11 @@ class Roll:
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
     def move_slightly_to(self, tx, ty):
-        self.tx, self.ty = self.patrol_locations[self.loc_no]
         self.dir = math.atan2(ty - self.y, tx - self.x)
         distance = RUN_SPEED_PPS * game_framework.frame_time
         if self.back_x <= 0:
             self.x += distance * math.cos(self.dir)
         pass
-
-    def move_to(self, r=0.5):
-        self.move_slightly_to(self.tx, self.ty)
-        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
-            return BehaviorTree.SUCCESS
-        else:
-            return BehaviorTree.RUNNING
 
 
     def set_idle(self):
@@ -184,7 +168,7 @@ class Roll:
 
     def move_to_knight(self, r=0.5):
         self.action = 1
-        self.move_slightly_to(server.knight.x, server.knight.y)
+        self.move_slightly_to(server.knight.x,server.knight.y)
         if self.distance_less_than(server.knight.x, server.knight.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:
