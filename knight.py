@@ -1,7 +1,9 @@
 import random
 
+from sdl2 import SDL_KEYDOWN, SDLK_s
+
 import game_world
-from pico2d import load_image, draw_rectangle, get_time, load_font ,clamp
+from pico2d import load_image, draw_rectangle, get_time, load_font, clamp, delay
 
 import game_framework
 import server
@@ -9,7 +11,7 @@ from dash_eff import Dash_eff
 from hit_eff import Hit_eff
 from slash import Slash_eff
 from state_machine import (right_down, left_up, left_down, right_up, start_event, StateMachine, z_down, x_down,
-                           end_motion, up_down, up_up, s_down, landed, fall)
+                           end_motion, up_down, up_up, s_down, landed, fall, die)
 
 PIXEL_PER_METER = (10.0 / 0.2)
 
@@ -40,7 +42,144 @@ FRAMES_PER_ACTION_SLASH = 5
 FRAMES_PER_ACTION_DASH = 7
 FRAMES_PER_ACTION_JUMP = 12
 FRAMES_PER_ACTION_FALL = 6
+FRAMES_PER_ACTION_DIE = 6
 
+
+class Die:
+    @staticmethod
+    def enter(knight, e):
+        if die(e):
+            knight.action = 8  # 낙하 동작의 인덱스를 8로 설정
+            knight.frame = 0
+    @staticmethod
+    def exit(knight, e):
+        if knight.frame > 12:
+            knight.die = True
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 12:
+            knight.state_machine.add_event(('END_MOTION', 0))
+
+    @staticmethod
+    def draw(knight):
+        sx = knight.x - server.stage.window_left
+        sy = knight.y - server.stage.window_bottom
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
+
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
+
+class UpDie:
+    @staticmethod
+    def enter(knight, e):
+        if die(e):
+            knight.action = 8  # 낙하 동작의 인덱스를 8로 설정
+            knight.frame = 0
+
+    @staticmethod
+    def exit(knight, e):
+        if knight.frame > 12:
+            knight.die = True
+        pass
+
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 12:
+            knight.state_machine.add_event(('END_MOTION', 0))
+
+    @staticmethod
+    def draw(knight):
+        sx = knight.x - server.stage.window_left
+        sy = knight.y - server.stage.window_bottom
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
+
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
+
+class MoveDie:
+    @staticmethod
+    def enter(knight, e):
+        if die(e):
+            knight.action = 8  # 낙하 동작의 인덱스를 8로 설정
+            knight.frame = 0
+
+    @staticmethod
+    def exit(knight, e):
+        if knight.frame > 12:
+            knight.die = True
+        pass
+
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 12:
+            knight.state_machine.add_event(('END_MOTION', 0))
+
+    @staticmethod
+    def draw(knight):
+        sx = knight.x - server.stage.window_left
+        sy = knight.y - server.stage.window_bottom
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
+
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
+
+class UpMoveDie:
+    @staticmethod
+    def enter(knight, e):
+        if die(e):
+            knight.action = 8  # 낙하 동작의 인덱스를 8로 설정
+            knight.frame = 0
+    @staticmethod
+    def exit(knight, e):
+        if knight.frame > 12:
+            knight.die = True
+        pass
+    @staticmethod
+    def do(knight):
+        knight.frame = (knight.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if knight.frame > 12:
+            knight.state_machine.add_event(('END_MOTION', 0))
+
+    @staticmethod
+    def draw(knight):
+        sx = knight.x - server.stage.window_left
+        sy = knight.y - server.stage.window_bottom
+        if knight.face_dir == 1:
+            knight.image.clip_composite_draw(
+                int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
+        else:
+            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
+
+        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
+
+    @staticmethod
+    def get_bb(knight):
+        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
 
 class Fall:
     @staticmethod
@@ -72,7 +211,6 @@ class Fall:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -108,8 +246,6 @@ class UpFall:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -154,7 +290,6 @@ class MoveFall:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -199,7 +334,6 @@ class UpMoveFall:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -235,9 +369,7 @@ class Idle:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -276,7 +408,6 @@ class UpIdle:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -319,9 +450,7 @@ class Run:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -353,7 +482,6 @@ class UpRun:
         if knight.frame > 9:
             knight.frame = 5
 
-
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
@@ -366,9 +494,7 @@ class UpRun:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -406,7 +532,6 @@ class Slash:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -442,7 +567,6 @@ class UpSlash:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx + 16,
                                        sy)
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -490,7 +614,6 @@ class MoveSlash:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -537,7 +660,6 @@ class UpMoveSlash:
                                        sy)
 
         draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -574,8 +696,6 @@ class Dash:
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
             draw_rectangle(sx - 60, sy - 65, sx , sy + 40)
-
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
@@ -615,8 +735,6 @@ class UpDash:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
             draw_rectangle(sx - 60, sy - 65, sx, sy + 40)
 
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
@@ -655,8 +773,6 @@ class Jump:
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
             draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -707,8 +823,6 @@ class MoveJump:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
             draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
@@ -747,8 +861,6 @@ class UpJump:
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
             draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(knight):
@@ -798,8 +910,6 @@ class UpMoveJump:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
             draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
-        knight.font.draw(sx - 10, sy + 50, f'{knight.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
@@ -812,11 +922,13 @@ class Knight:
     def __init__(self,stage = 1 , dash = False , state = Idle):
         self.x, self.y = 100 ,200
         self.frame = 0
+        self.back_x = 0
         self.jump_frame = 0
         self.jump = False
         self.on_ground = False
         self.die = False
         self.dash = dash
+        self.attack_dir = 1
         self.invincibility_time = 0
         self.x_dir = 1
         self.y_dir = -1
@@ -825,39 +937,44 @@ class Knight:
         self.stage = stage
         self.hit_eff = Hit_eff()
         self.hp = 4
-        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.slash_eff = Slash_eff()
         self.dash_eff = Dash_eff()
         self.state_machine = StateMachine(self)
         self.state_machine.start(state)
         self.state_machine.set_transitions(
             {
-                Idle:{fall: Fall, right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:UpIdle},
-                UpIdle: {fall: UpFall, right_down: UpRun, left_down: UpRun, left_up: UpRun, right_up: UpRun, x_down: UpSlash, z_down: UpJump, up_up:Idle},
+                Die: {end_motion: Idle ,right_down: MoveDie, left_down: MoveDie, left_up: MoveDie, right_up: MoveDie, up_down:UpDie},
+                UpDie: {end_motion: UpIdle, right_down: UpMoveDie, left_down: UpMoveDie, left_up: UpMoveDie,right_up: UpMoveDie, up_up: Die},
 
-                Run: {fall: MoveFall, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: MoveSlash , s_down:Dash, z_down: MoveJump, up_down:UpRun},
-                UpRun: {fall: UpMoveFall , right_down: UpIdle, left_down: UpIdle, right_up: UpIdle, left_up: UpIdle, x_down: UpMoveSlash, s_down:UpDash, z_down: UpMoveJump, up_up:Run},
+                MoveDie: {end_motion: Run, right_down: Die, left_down: Die, right_up: Die, left_up: Die,up_down: UpMoveDie},
+                UpMoveDie: {end_motion: UpRun ,right_down: UpDie, left_down: UpDie, right_up: UpDie, left_up: UpDie, up_up:MoveDie},
 
-                Slash:{end_motion: Idle , right_down: MoveSlash, left_down: MoveSlash, right_up: MoveSlash, left_up: MoveSlash , up_down:UpSlash},
-                MoveSlash:{end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash , up_down:UpMoveSlash},
+                Idle:{die: Die ,fall: Fall, right_down: Run, left_down: Run, left_up: Run, right_up: Run, x_down: Slash, z_down: Jump, up_down:UpIdle},
+                UpIdle: {die: UpDie ,fall: UpFall, right_down: UpRun, left_down: UpRun, left_up: UpRun, right_up: UpRun, x_down: UpSlash, z_down: UpJump, up_up:Idle},
 
-                UpSlash:{end_motion: UpIdle , right_down: UpMoveSlash, left_down: UpMoveSlash, right_up: UpMoveSlash, left_up: UpMoveSlash , up_up:Slash},
-                UpMoveSlash: {end_motion: UpRun, right_down: UpSlash, left_down: UpSlash, right_up: UpSlash, left_up: UpSlash , up_up:MoveSlash},
+                Run: {die: MoveDie ,fall: MoveFall, right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, x_down: MoveSlash , s_down:Dash, z_down: MoveJump, up_down:UpRun},
+                UpRun: {die: UpMoveDie, fall: UpMoveFall , right_down: UpIdle, left_down: UpIdle, right_up: UpIdle, left_up: UpIdle, x_down: UpMoveSlash, s_down:UpDash, z_down: UpMoveJump, up_up:Run},
 
-                Dash:{end_motion: Run , right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle, up_down:UpDash},
-                UpDash: {end_motion: UpRun, right_down: UpIdle, left_down: UpIdle, left_up: UpIdle, right_up: UpIdle, up_up:Dash},
+                Slash:{die: Die ,end_motion: Idle , right_down: MoveSlash, left_down: MoveSlash, right_up: MoveSlash, left_up: MoveSlash , up_down:UpSlash},
+                UpSlash: {die: UpDie, end_motion: UpIdle, right_down: UpMoveSlash, left_down: UpMoveSlash,right_up: UpMoveSlash, left_up: UpMoveSlash, up_up: Slash},
 
-                Jump:{landed: Idle , right_down: MoveJump, left_down: MoveJump, right_up: MoveJump, left_up: MoveJump, x_down:Slash                , up_down:UpJump},
-                MoveJump:{landed: Run, right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump, x_down:MoveSlash, s_down:Dash                              , up_down:UpMoveJump},
+                MoveSlash:{die: MoveDie ,end_motion: Run, right_down: Slash, left_down: Slash, right_up: Slash, left_up: Slash , up_down:UpMoveSlash},
+                UpMoveSlash: {die: UpMoveDie,end_motion: UpRun, right_down: UpSlash, left_down: UpSlash, right_up: UpSlash, left_up: UpSlash , up_up:MoveSlash},
 
-                UpJump: {landed: UpIdle, right_down: UpMoveJump, left_down: UpMoveJump, right_up: UpMoveJump, left_up: UpMoveJump, x_down:UpSlash                        , up_up:Jump},
-                UpMoveJump: {landed: UpRun, right_down: UpJump, left_down: UpJump, right_up: UpJump, left_up: UpJump, x_down:UpMoveSlash, s_down:UpDash                   , up_up:MoveJump},
+                Dash:{die: MoveDie,end_motion: Run , right_down: Idle, left_down: Idle, left_up: Idle, right_up: Idle, up_down:UpDash},
+                UpDash: {die: UpMoveDie,end_motion: UpRun, right_down: UpIdle, left_down: UpIdle, left_up: UpIdle, right_up: UpIdle, up_up:Dash},
 
-                Fall:{landed: Idle, right_down: MoveFall, left_down: MoveFall, right_up: MoveFall, left_up: MoveFall, x_down: Slash   , up_down:UpFall},
-                MoveFall: {landed: Run, right_down: Fall, left_down: Fall, right_up: Fall, left_up: Fall, x_down: MoveSlash, s_down:Dash     , up_down:UpMoveFall},
+                Jump:{die: Die,landed: Idle , right_down: MoveJump, left_down: MoveJump, right_up: MoveJump, left_up: MoveJump, x_down:Slash,up_down:UpJump},
+                UpJump: {die: UpDie,landed: UpIdle, right_down: UpMoveJump, left_down: UpMoveJump, right_up: UpMoveJump,left_up: UpMoveJump, x_down: UpSlash, up_up: Jump},
 
-                UpFall: {landed: UpIdle, right_down: UpMoveFall, left_down: UpMoveFall, right_up: UpMoveFall, left_up: UpMoveFall, x_down: UpSlash  , up_up:Fall},
-                UpMoveFall: {landed: UpRun, right_down: UpFall, left_down: UpFall, right_up: UpFall, left_up: UpFall, x_down: UpMoveSlash, s_down:UpDash  , up_up:MoveFall},
+                MoveJump:{die: MoveDie,landed: Run, right_down: Jump, left_down: Jump, right_up: Jump, left_up: Jump, x_down:MoveSlash, s_down:Dash, up_down:UpMoveJump},
+                UpMoveJump: {die: UpMoveDie,landed: UpRun, right_down: UpJump, left_down: UpJump, right_up: UpJump, left_up: UpJump, x_down:UpMoveSlash, s_down:UpDash,up_up:MoveJump},
+
+                Fall:{die: Die,landed: Idle, right_down: MoveFall, left_down: MoveFall, right_up: MoveFall, left_up: MoveFall, x_down: Slash,up_down:UpFall},
+                UpFall: {die: UpDie,landed: UpIdle, right_down: UpMoveFall, left_down: UpMoveFall, right_up: UpMoveFall,left_up: UpMoveFall, x_down: UpSlash, up_up: Fall},
+
+                MoveFall: {die: MoveDie,landed: Run, right_down: Fall, left_down: Fall, right_up: Fall, left_up: Fall, x_down: MoveSlash, s_down:Dash,up_down:UpMoveFall},
+                UpMoveFall: {die: UpMoveDie,landed: UpRun, right_down: UpFall, left_down: UpFall, right_up: UpFall, left_up: UpFall, x_down: UpMoveSlash, s_down:UpDash  , up_up:MoveFall},
             }
         )
         if Knight.image == None:
@@ -865,6 +982,18 @@ class Knight:
 
     def update(self):
         self.state_machine.update()
+
+        if self.back_x > 0:
+            if self.attack_dir < 0:
+                self.x += -2 * RUN_SPEED_PPS * game_framework.frame_time
+                self.slash_eff.x += -2 * RUN_SPEED_PPS * game_framework.frame_time
+                self.dash_eff.x += -2 * RUN_SPEED_PPS * game_framework.frame_time
+            else:
+                self.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
+                self.slash_eff.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
+                self.dash_eff.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
+            self.back_x -= 1
+            self.x = clamp(30.0, self.x, server.stage.w - 30.0)
 
         if self.on_ground:  # 현재 지면에 있는 상태라면
             tile_below = server.stage.get_tile_below(self)  # 캐릭터 아래 타일 확인 (구현 필요)
@@ -891,6 +1020,8 @@ class Knight:
             self.jump_frame = 9
 
     def handle_event(self, event):
+        if event.type == SDL_KEYDOWN and event.key == SDLK_s and not self.dash:
+            return
         self.state_machine.add_event(
             ('INPUT', event)
         )
@@ -966,7 +1097,7 @@ class Knight:
                         if self.state_machine.cur_state in (Jump, MoveJump, UpJump, UpMoveJump,
                                                             Fall, MoveFall, UpFall, UpMoveFall):
                             if not self.jump:
-                                self.state_machine.add_event(('Landed', 0))
+                                self.state_machine.add_event(('LANDED', 0))
                                 self.y = other_top + 65  # 타일 위로 위치 보정
                                 self.slash_eff.y = other_top + 65
                                 self.on_ground = True
@@ -979,13 +1110,16 @@ class Knight:
                             self.y_dir = 0
 
         elif group == 'knight:fly' or group == 'knight:walk'or group == 'knight:roll'or group == 'knight:overload':
-            if get_time() - self.invincibility_time > 1 and other.die == False:
+            if get_time() - self.invincibility_time > 1 and other.die == False and self.hp > 0:
                 self.invincibility_time = get_time()
+                game_world.remove_object(server.hp1[self.hp - 1])
                 self.hp -= 1
                 self.hit_eff = Hit_eff(self.x, self.y, self.face_dir)
+                self.back_x = 80
                 game_world.add_object(self.hit_eff, 2)
+                self.attack_dir = self.x - other.x
                 if self.hp < 1:
-                    self.state_machine.add_event(('Die', 0))
+                    self.state_machine.add_event(('DIE', 0))
 
         elif group == 'knight:goal':
             if other.stage == 1:

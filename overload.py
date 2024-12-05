@@ -24,7 +24,7 @@ FRAMES_PER_ACTION_DIE = 6
 class Overload:
     image = None
 
-    def __init__(self, x = 300, y= 400 ):
+    def __init__(self, x = 300, y= 400, type = 0 ):
         self.x, self.y = x, y
         self.action = 0
         self.frame = 0
@@ -33,6 +33,7 @@ class Overload:
         self.attack_dir = 0
         self.dir = -1
         self.hp = 4
+        self.type = type
         self.hit_eff = Hit_eff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
@@ -41,7 +42,10 @@ class Overload:
         if Overload.image == None:
             Overload.image = load_image('./resource/overload.png')
 
-        self.patrol_locations = [(self.x, self.y), (self.x + 400, self.y + 400)]
+        if self.type == 0:
+            self.patrol_locations = [(self.x, self.y), (self.x + 400, self.y + 400)]
+        else:
+            self.patrol_locations = [(self.x, self.y), (self.x + 400, self.y - 400)]
         self.loc_no = 0
 
     def update(self):

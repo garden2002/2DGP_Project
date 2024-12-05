@@ -19,16 +19,15 @@ FRAMES_PER_ACTION_IDLE = 4
 FRAMES_PER_ACTION_RUN = 6
 FRAMES_PER_ACTION_DIE = 4
 
-
 class Roll:
     image = None
-    def __init__(self, x = 700, y= 500):
+    def __init__(self, x = 700, y= 500 , dir = -1):
         self.x, self.y = x, y
         self.action = 0
         self.frame = 0
         self.back_x = 0
         self.back_y = 0
-        self.dir = -1
+        self.dir = dir
         self.hp = 4
         self.y_dir = 0
         self.on_ground = False
@@ -39,7 +38,6 @@ class Roll:
         self.build_behavior_tree()
         if Roll.image == None:
             Roll.image = load_image('./resource/roll.png')
-
 
     def update(self):
         if self.action == 0:
@@ -98,7 +96,7 @@ class Roll:
         self.font.draw(sx - 10, sy + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def get_bb(self):
-        if self.dir == 1:
+        if  math.cos(self.dir) > 0:
             if self.action == 0:
                 return self.x - 20, self.y - 60, self.x + 60, self.y + 10
             else:
@@ -141,7 +139,6 @@ class Roll:
                         self.y = other_top + 60  # 타일 위로 위치 보정
                         self.on_ground = True
                         self.y_dir = 0
-        pass
 
     def distance_less_than(self, x1, y1, x2, y2, r):
         distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
@@ -152,28 +149,23 @@ class Roll:
         distance = RUN_SPEED_PPS * game_framework.frame_time
         if self.back_x <= 0:
             self.x += distance * math.cos(self.dir)
-        pass
-
 
     def set_idle(self):
         self.action = 0
-
 
     def is_knight_nearby(self, distance):
         if self.distance_less_than(server.knight.x, server.knight.y, self.x, self.y, distance):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
-        pass
 
     def move_to_knight(self, r=0.5):
         self.action = 1
-        self.move_slightly_to(server.knight.x,server.knight.y)
+        self.move_slightly_to(server.knight.x,self.y)
         if self.distance_less_than(server.knight.x, server.knight.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
-        pass
 
     def is_die(self):
         if self.die:
@@ -202,6 +194,5 @@ class Roll:
 
         root = chase_or_patrol = Selector('추적 또는 배회', die_object, chase_knight, idle)
         self.bt = BehaviorTree(root)
-        pass
 
 

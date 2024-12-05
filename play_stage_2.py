@@ -3,13 +3,18 @@ from pico2d import *
 import game_framework
 import game_world
 import play_stage_boss
-from fly import Flying_object
+from hp1 import Hp1
+from hp2 import Hp2
+
 from knight import Knight
-from overload import Overload
 from roll import Roll
 from stage2 import Stage2
 from walk import Walk_object
 import server
+import math
+
+loc_walk = [(1400 , 2160 -1860) ,(1440 , 2160 -1190) ,(2170 , 2160 -480)]
+loc_roll = [(1980 , 2160 -1860 , math.atan2(0 , -1)) , (500 , 2160 - 1040 ,  math.atan2(0, 1)) ,(1570, 2160 - 1180 , math.atan2(0, 1))]
 
 def handle_events():
     events = get_events()
@@ -28,40 +33,32 @@ def init():
     server.walks = []
     server.overloads = []
     server.rolls = []
+    server.hp1 = []
+    server.hp2 = None
     server.map = None
-    before_state = server.knight.state_machine.cur_state
-    server.knight = None
-    server.knight = Knight(2,True ,before_state)
+    if not server.knight is None:
+        before_state = server.knight.state_machine.cur_state
+        server.knight = None
+        server.knight = Knight(2,True ,before_state)
+    else:
+        server.knight = None
+        server.knight = Knight(2,True)
     game_world.add_object(server.knight, 2)
     game_world.add_collision_pair('knight:tile', server.knight, None)
-    game_world.add_collision_pair('knight:fly', server.knight, None)
     game_world.add_collision_pair('knight:walk', server.knight, None)
-    game_world.add_collision_pair('knight:overload', server.knight, None)
     game_world.add_collision_pair('knight:roll', server.knight, None)
     game_world.add_collision_pair('knight:goal', server.knight, None)
 
-    server.flies.append(Flying_object())
-    server.flies.append(Flying_object(300, 150))
-    game_world.add_objects(server.flies, 1)
-    for fly in server.flies:
-        game_world.add_collision_pair('slash:fly', None, fly)
-        game_world.add_collision_pair('knight:fly', None, fly)
-
-    server.walks.append(Walk_object(1000))
+    for loc in loc_walk:
+        server.walks.append(Walk_object(loc[0],loc[1]))
     game_world.add_objects(server.walks, 1)
     for walk in server.walks:
         game_world.add_collision_pair('slash:walk', None, walk)
         game_world.add_collision_pair('knight:walk', None, walk)
         game_world.add_collision_pair('walk:tile', walk, None)
 
-
-    server.overloads.append(Overload(1000 , 300))
-    game_world.add_objects(server.overloads, 1)
-    for overload in server.overloads:
-        game_world.add_collision_pair('slash:overload', None, overload)
-        game_world.add_collision_pair('knight:overload', None, overload)
-
-    server.rolls.append(Roll(1000, 300))
+    for loc in loc_roll:
+        server.rolls.append(Roll(loc[0],loc[1],loc[2]))
     game_world.add_objects(server.rolls, 1)
     for roll in server.rolls:
         game_world.add_collision_pair('slash:roll', None, roll)
@@ -71,11 +68,21 @@ def init():
     server.stage = Stage2()
     game_world.add_object(server.stage, 0)
 
+    server.hp2 = Hp2()
+    game_world.add_object(server.hp2, 3)
+
+    for hp in range(server.knight.hp):
+        server.hp1.append(Hp1(130 + 100 * (hp + 1)))
+    game_world.add_objects(server.hp1, 3)
+
 def update():
     game_world.update()
     game_world.handle_collisions()
     if server.knight.stage == 3:
         game_framework.change_mode(play_stage_boss)
+    if server.knight.die:
+        finish()
+        init()
     pass
 
 

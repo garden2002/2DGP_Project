@@ -2,7 +2,7 @@ from pico2d import *
 
 import game_framework
 
-import play_stage_1 as start_mode
+import play_stage_2 as start_mode
 
 
 open_canvas(1280, 720)

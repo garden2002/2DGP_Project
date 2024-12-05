@@ -2,6 +2,9 @@ from pico2d import *
 
 import game_framework
 import game_world
+from hp1 import Hp1
+from hp2 import Hp2
+
 from knight import Knight
 from stageboss import StageBoss
 from stagebossColumn import StageBossColumn
@@ -24,22 +27,38 @@ def init():
     server.walks = []
     server.overloads = []
     server.rolls = []
+    server.hp1 = []
+    server.hp2 = None
     server.map = None
-    before_state = server.knight.state_machine.cur_state
-    server.knight = None
-    server.knight = Knight(2,True , before_state)
+
+    if not server.knight is None:
+        before_state = server.knight.state_machine.cur_state
+        server.knight = None
+        server.knight = Knight(3,True , before_state)
+    else:
+        server.knight = None
+        server.knight = Knight()
     game_world.add_object(server.knight, 1)
     game_world.add_collision_pair('knight:tile', server.knight, None)
-
 
     server.stage = StageBoss()
     game_world.add_object(server.stage, 0)
     stage_column = StageBossColumn()
     game_world.add_object(stage_column, 2)
 
+    server.hp2 = Hp2()
+    game_world.add_object(server.hp2, 3)
+
+    for hp in range(server.knight.hp):
+        server.hp1.append(Hp1(130 + 100 * (hp + 1)))
+    game_world.add_objects(server.hp1, 3)
+
 def update():
     game_world.update()
     game_world.handle_collisions()
+    if server.knight.die:
+        finish()
+        init()
     pass
 
 

@@ -162,7 +162,7 @@ class Flying_object:
         a1 = Action('Set Idle location', self.set_idle)
         idle = Sequence('Wander', a1)
 
-        c1 = Condition('기사가 근처에 있는가?',self.is_knight_nearby,15)
+        c1 = Condition('기사가 근처에 있는가?',self.is_knight_nearby,11)
         a2 = Action('기사에게 접근' , self.move_to_knight)
         chase_knight = Sequence('소년을 추적', c1, a2)
 

@@ -1,7 +1,9 @@
 # event (종류 문자열 , 실제 값)
-from tabnanny import check
 
 from sdl2 import SDL_KEYDOWN, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_z, SDLK_x, SDLK_UP, SDLK_s
+
+def die(e):
+    return e[0] == 'DIE'
 
 def fall(e):
     return e[0] == 'FALLING'
@@ -16,10 +18,7 @@ def end_motion(e):
     return e[0] == 'END_MOTION'
 
 def landed(e):
-    return e[0] == 'Landed'
-
-def die(e):
-    return e[0] == 'Die'
+    return e[0] == 'LANDED'
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
@@ -73,7 +72,7 @@ class StateMachine:
 
     def start(self, start_state):
         #현재 상태를 시작 상태로 만듬
-        self.cur_state = start_state #Idle
+        self.cur_state = start_state
         self.cur_state.enter(self.o ,('START' , 0))
         print(f'ENTER into {self.cur_state}')
         pass

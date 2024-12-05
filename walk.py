@@ -148,7 +148,7 @@ class Walk_object:
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
     def move_slightly_to(self, tx, ty):
-        self.tx, self.ty = self.patrol_locations[self.loc_no]
+        self.tx, self.ty = self.patrol_locations[self.loc_no][0], self.y
         self.dir = math.atan2(ty - self.y, tx - self.x)
         if self.action == 0:
             distance = WALK_SPEED_PPS * game_framework.frame_time
@@ -167,7 +167,7 @@ class Walk_object:
             return BehaviorTree.RUNNING
 
     def get_patrol_location(self):
-        self.tx, self.ty = self.patrol_locations[self.loc_no]
+        self.tx, self.ty = self.patrol_locations[self.loc_no][0], self.y
         self.loc_no = (self.loc_no + 1) % len(self.patrol_locations)
         return BehaviorTree.SUCCESS
 
@@ -181,7 +181,7 @@ class Walk_object:
 
     def move_to_knight(self, r=0.5):
         self.action = 2
-        self.move_slightly_to(server.knight.x, server.knight.y)
+        self.move_slightly_to(server.knight.x, self.y)
         if self.distance_less_than(server.knight.x, server.knight.y, self.x, self.y, r):
             return BehaviorTree.SUCCESS
         else:

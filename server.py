@@ -8,4 +8,5 @@ walks = []
 overloads = []
 rolls = []
 map = None
-
+hp1 = []
+hp2 = None
