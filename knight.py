@@ -7,7 +7,7 @@ from pico2d import load_image, get_time, clamp, load_wav
 
 import game_framework
 import server
-from boss import DieEnd
+from boss import DieEnd, DieStart
 from dasheff import DashEff
 from hiteff import HitEff
 from slasheff import SlashEff
@@ -1121,7 +1121,7 @@ class Knight:
                     self.state_machine.add_event(('DIE', 0))
 
         elif  group == 'knight:boss':
-            if get_time() - self.invincibility_time > 1 and other.die == False and self.hp > 0 and not other.state_machine.cur_state in (Die, DieEnd):
+            if get_time() - self.invincibility_time > 1 and other.die == False and self.hp > 0 and not other.state_machine.cur_state in (DieStart, DieEnd):
                 self.invincibility_time = get_time()
                 game_world.remove_object(server.hp1[self.hp - 1])
                 self.hp -= 1

@@ -30,13 +30,15 @@ FRAMES_PER_ACTION_ATTACK = 6
 FRAMES_PER_ACTION_DIE = 4
 FRAMES_PER_ACTION_DIEEND = 2
 
-class Die:
+class DieStart:
     @staticmethod
     def enter(boss, e):
         boss.die_sound.play(2)
         boss.die_count = 0
         boss.action = 7  # 낙하 동작의 인덱스를 8로 설정
         boss.frame = 0
+        boss.y_dir = -1
+        boss.jump = False
     @staticmethod
     def exit(boss, e):
         pass
@@ -55,6 +57,7 @@ class Die:
             else:
                 boss.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
             boss.back_x -= 1
+        boss.y += boss.y_dir * RUN_SPEED_PPS * game_framework.frame_time
 
     @staticmethod
     def draw(boss):
@@ -80,6 +83,8 @@ class DieEnd:
     def enter(boss, e):
         boss.action = 8  # 낙하 동작의 인덱스를 8로 설정
         boss.frame = 0
+        boss.y_dir = -1
+        boss.jump = False
     @staticmethod
     def exit(boss, e):
         pass
@@ -90,7 +95,7 @@ class DieEnd:
         if boss.frame > 4:
             boss.frame = 3
             boss.die = True
-
+        boss.y += boss.y_dir * RUN_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(boss):
         sx = boss.x - server.stage.window_left
@@ -430,15 +435,15 @@ class Boss:
         self.state_machine.start(Idle)
         self.state_machine.set_transitions(
             {
-                Idle : { die:Die , jump_time_out : MoveReady,attack_time_out : AttackReady},
-                MoveReady : {die:Die , end_motion: Move},
-                Move : {die:Die , landed: Land , end_motion:Idle},
-                Land : {die:Die , end_motion:Idle},
-                AttackReady : {die:Die , end_motion: Attack},
-                Attack: {die:Die , end_motion: AttackEnd},
-                AttackEnd:{die:Die , end_motion: Idle},
-                Die : {end_motion:DieEnd},
-                DieEnd : {end_motion:Idle}
+                Idle : {die:DieStart , jump_time_out : MoveReady, attack_time_out : AttackReady},
+                MoveReady : {die:DieStart , end_motion: Move},
+                Move : {die:DieStart , landed: Land , end_motion:Idle},
+                Land : {die:DieStart , end_motion:Idle},
+                AttackReady : {die:DieStart , end_motion: Attack},
+                Attack: {die:DieStart , end_motion: AttackEnd},
+                AttackEnd:{die:DieStart , end_motion: Idle},
+                DieStart : {end_motion:DieEnd},
+                DieEnd : {}
             }
         )
         if Boss.image is None:
@@ -469,7 +474,7 @@ class Boss:
 
     def handle_collision(self, group, other):
         if group == 'slash:boss':
-            if get_time() - self.invincibility_time > 0.6:
+            if get_time() - self.invincibility_time > 0.6 and not self.die:
                 self.invincibility_time = get_time()
                 self.hp -= 1
                 self.hit_eff = HitEff(self.x, self.y - 200, self.dir)

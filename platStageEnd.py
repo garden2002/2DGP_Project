@@ -1,5 +1,5 @@
 from pico2d import load_image, get_events, clear_canvas, update_canvas, load_music
-from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE,
+from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE
 
 import game_framework
 
