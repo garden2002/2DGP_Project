@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+from boss import Boss
 from hp1 import Hp1
 from hp2 import Hp2
 
@@ -30,6 +31,7 @@ def init():
     server.hp1 = []
     server.hp2 = None
     server.map = None
+    server.boss = None
 
     if not server.knight is None:
         before_state = server.knight.state_machine.cur_state
@@ -40,11 +42,19 @@ def init():
         server.knight = Knight()
     game_world.add_object(server.knight, 1)
     game_world.add_collision_pair('knight:tile', server.knight, None)
+    game_world.add_collision_pair('knight:boss', server.knight, None)
+    game_world.add_collision_pair('knight:attack', server.knight, None)
+
+    server.boss = Boss()
+    game_world.add_object(server.boss, 1)
+    game_world.add_collision_pair('boss:tile', server.boss, None)
+    game_world.add_collision_pair('knight:boss', None, server.boss)
+    game_world.add_collision_pair('slash:boss', None,  server.boss)
 
     server.stage = StageBoss()
     game_world.add_object(server.stage, 0)
     stage_column = StageBossColumn()
-    game_world.add_object(stage_column, 2)
+    game_world.add_object(stage_column, 3)
 
     server.hp2 = Hp2()
     game_world.add_object(server.hp2, 3)
