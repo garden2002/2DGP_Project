@@ -23,7 +23,7 @@ FRAMES_PER_ACTION_DIE = 3
 
 class Flying_object:
     image = None
-
+    damage_sound = None
     def __init__(self, x = 300, y= 400 ):
         self.x, self.y = x, y
         self.action = 0
@@ -34,12 +34,13 @@ class Flying_object:
         self.hp = 4
         self.hit_eff = HitEff()
         self.invincibility_time = 0
-        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
         self.build_behavior_tree()
         if Flying_object.image == None:
             Flying_object.image = load_image('./resource/fly.png')
-
+        if Flying_object.damage_sound is None:
+            Flying_object.damage_sound = load_wav('./resource/enemy_damage.wav')
+            Flying_object.damage_sound.set_volume(32)
     def update(self):
         if self.action == 0:
             self.frame = (self.frame + FRAMES_PER_ACTION_IDLE * ACTION_PER_TIME * game_framework.frame_time) % 5
@@ -75,11 +76,6 @@ class Flying_object:
             )
         else:
             self.image.clip_draw(int(self.frame) * 140, self.action * 140, 140, 140, sx, sy)
-        if math.cos(self.dir) > 0:
-            draw_rectangle(sx - 40, sy - 65, sx + 70, sy + 65)
-        else:
-            draw_rectangle(sx - 70, sy - 65, sx + 40, sy + 65)
-        self.font.draw(sx - 10, sy + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def get_bb(self):
         if math.cos(self.dir) > 0:
@@ -96,6 +92,7 @@ class Flying_object:
                 self.back_y = 70
                 self.hit_eff = HitEff(self.x, self.y, self.dir)
                 game_world.add_object(self.hit_eff, 2)
+                self.damage_sound.play()
                 if self.hp < 1:
                     self.die = True
                     self.frame = 0

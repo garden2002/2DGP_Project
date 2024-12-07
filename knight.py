@@ -3,10 +3,11 @@ import random
 from sdl2 import SDL_KEYDOWN, SDLK_s
 
 import game_world
-from pico2d import load_image, draw_rectangle, get_time, load_font, clamp, delay
+from pico2d import load_image, get_time, clamp, load_wav
 
 import game_framework
 import server
+from boss import DieEnd
 from dasheff import DashEff
 from hiteff import HitEff
 from slasheff import SlashEff
@@ -42,7 +43,7 @@ FRAMES_PER_ACTION_SLASH = 5
 FRAMES_PER_ACTION_DASH = 7
 FRAMES_PER_ACTION_JUMP = 12
 FRAMES_PER_ACTION_FALL = 6
-FRAMES_PER_ACTION_DIE = 6
+FRAMES_PER_ACTION_DIE = 3
 
 
 class Die:
@@ -71,8 +72,6 @@ class Die:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -107,8 +106,6 @@ class UpDie:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -142,8 +139,6 @@ class MoveDie:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -174,8 +169,6 @@ class UpMoveDie:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -209,9 +202,6 @@ class Fall:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -244,8 +234,6 @@ class UpFall:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -288,9 +276,6 @@ class MoveFall:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -333,8 +318,6 @@ class UpMoveFall:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -369,7 +352,6 @@ class Idle:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -406,8 +388,6 @@ class UpIdle:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -450,7 +430,6 @@ class Run:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -494,7 +473,7 @@ class UpRun:
                 int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
+
 
     @staticmethod
     def get_bb(knight):
@@ -504,6 +483,7 @@ class Slash:
     @staticmethod
     def enter(knight , e):
         if x_down(e):
+            knight.sword_sound.play(1)
             knight.frame = 0
             knight.action = random.randint(1, 2)
             knight.knight_slash()
@@ -530,8 +510,6 @@ class Slash:
             )
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
-
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -540,6 +518,7 @@ class UpSlash:
     @staticmethod
     def enter(knight , e):
         if x_down(e):
+            knight.sword_sound.play(1)
             knight.frame = 0
             knight.action = 0
             knight.knight_slash()
@@ -566,7 +545,6 @@ class UpSlash:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx + 16,
                                        sy)
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -584,6 +562,7 @@ class MoveSlash:
             knight.x_dir = -1
             pass
         elif x_down(e):
+            knight.sword_sound.play()
             knight.frame = 0
             knight.action = random.randint(1, 2)
             knight.knight_slash()
@@ -597,6 +576,7 @@ class MoveSlash:
             knight.state_machine.add_event(('END_MOTION', 0))
 
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
         knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -613,8 +593,6 @@ class MoveSlash:
         else:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -629,6 +607,7 @@ class UpMoveSlash:
             knight.face_dir = -1
             knight.x_dir = -1
         elif x_down(e):
+            knight.sword_sound.play(1)
             knight.frame = 0
             knight.action = 0
             knight.knight_slash()
@@ -642,6 +621,7 @@ class UpMoveSlash:
             knight.state_machine.add_event(('END_MOTION', 0))
 
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
         knight.slash_eff.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
         knight.slash_eff.y += knight.y_dir * RUN_SPEED_PPS * game_framework.frame_time
@@ -659,8 +639,6 @@ class UpMoveSlash:
             knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx + 16,
                                        sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
-
     @staticmethod
     def get_bb(knight):
         return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
@@ -669,6 +647,7 @@ class Dash:
     @staticmethod
     def enter(knight , e):
         if s_down(e):
+            knight.dash_sound.play()
             knight.frame = 0
             knight.action = 5
             knight.jump_frame = 12
@@ -684,6 +663,7 @@ class Dash:
             knight.state_machine.add_event(('END_MOTION', 0))
 
         knight.x += knight.x_dir * DASH_SPEED_PPS * game_framework.frame_time
+        knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
         knight.dash_eff.x += knight.x_dir * DASH_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
@@ -692,10 +672,8 @@ class Dash:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx - 60, sy, 256, 128)
-            draw_rectangle(sx, sy - 65, sx + 60, sy + 40)
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
-            draw_rectangle(sx - 60, sy - 65, sx , sy + 40)
     @staticmethod
     def get_bb(knight):
         if knight.face_dir == 1:
@@ -707,6 +685,7 @@ class UpDash:
     @staticmethod
     def enter(knight , e):
         if s_down(e):
+            knight.dash_sound.play()
             knight.frame = 0
             knight.action = 5
             knight.jump_frame = 12
@@ -722,6 +701,7 @@ class UpDash:
             knight.state_machine.add_event(('END_MOTION', 0))
 
         knight.x += knight.x_dir * DASH_SPEED_PPS * game_framework.frame_time
+        knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
         knight.dash_eff.x += knight.x_dir * DASH_SPEED_PPS * game_framework.frame_time
     @staticmethod
     def draw(knight):
@@ -730,10 +710,8 @@ class UpDash:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.frame) * 256, knight.action * 128, 256, 128, 0, 'h', sx - 60, sy, 256, 128)
-            draw_rectangle(sx, sy - 65, sx + 60, sy + 40)
         else:
             knight.image.clip_draw(int(knight.frame) * 256, knight.action * 128, 256, 128, sx + 60, sy)
-            draw_rectangle(sx - 60, sy - 65, sx, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -746,6 +724,7 @@ class Jump:
     @staticmethod
     def enter(knight , e):
         if z_down(e):
+            knight.jump_sound.play()
             knight.jump_frame = 0
             knight.action = 6
             knight.y_dir = 1
@@ -769,10 +748,8 @@ class Jump:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -793,6 +770,7 @@ class MoveJump:
             knight.x_dir = -1
             pass
         elif z_down(e):
+            knight.jump_sound.play()
             knight.jump_frame = 0
             knight.action = 6
             knight.y_dir = 1
@@ -810,7 +788,7 @@ class MoveJump:
             if knight.y_dir > -2.5:
                 knight.y_dir += -0.0098
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
-
+        knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
     @staticmethod
     def draw(knight):
         sx = knight.x - server.stage.window_left
@@ -818,10 +796,8 @@ class MoveJump:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -834,6 +810,7 @@ class UpJump:
     @staticmethod
     def enter(knight , e):
         if z_down(e):
+            knight.jump_sound.play()
             knight.jump_frame = 0
             knight.action = 6
             knight.y_dir = 1
@@ -857,10 +834,8 @@ class UpJump:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -881,6 +856,7 @@ class UpMoveJump:
             knight.x_dir = -1
             pass
         elif z_down(e):
+            knight.jump_sound.play()
             knight.jump_frame = 0
             knight.action = 6
             knight.y_dir = 1
@@ -898,6 +874,7 @@ class UpMoveJump:
             if knight.y_dir > -2.5:
                 knight.y_dir += -0.0098
         knight.x += knight.x_dir * RUN_SPEED_PPS * game_framework.frame_time
+        knight.x = clamp(30.0, knight.x, server.stage.w - 30.0)
     @staticmethod
     def draw(knight):
         sx = knight.x - server.stage.window_left
@@ -905,10 +882,8 @@ class UpMoveJump:
         if knight.face_dir == 1:
             knight.image.clip_composite_draw(
                 int(knight.jump_frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx - 15, sy, 128, 128)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
         else:
             knight.image.clip_draw(int(knight.jump_frame) * 128, knight.action * 128, 128, 128, sx + 15, sy)
-            draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
 
     @staticmethod
     def get_bb(knight):
@@ -919,6 +894,12 @@ class UpMoveJump:
 
 class Knight:
     image = None
+    damage_sound = None
+    dash_sound = None
+    land_sound = None
+    jump_sound = None
+    sword_sound = None
+    die_sound = None
     def __init__(self,stage = 1 , dash = False , state = Idle):
         self.x, self.y = 100 ,200
         self.frame = 0
@@ -977,8 +958,21 @@ class Knight:
                 UpMoveFall: {die: UpMoveDie,landed: UpRun, right_down: UpFall, left_down: UpFall, right_up: UpFall, left_up: UpFall, x_down: UpMoveSlash, s_down:UpDash  , up_up:MoveFall},
             }
         )
-        if Knight.image == None:
+        if Knight.image is None:
             Knight.image = load_image('./resource/knight.png')
+        if Knight.damage_sound is None:
+            Knight.damage_sound = load_wav('./resource/damage.wav')
+            Knight.dash_sound = load_wav('./resource/dash.wav')
+            Knight.land_sound = load_wav('./resource/land.wav')
+            Knight.sword_sound = load_wav('./resource/sword.wav')
+            Knight.jump_sound = load_wav('./resource/jump.wav')
+            Knight.die_sound = load_wav('./resource/die.wav')
+            Knight.damage_sound.set_volume(32)
+            Knight.dash_sound.set_volume(32)
+            Knight.land_sound.set_volume(32)
+            Knight.sword_sound.set_volume(32)
+            Knight.jump_sound.set_volume(32)
+            Knight.die_sound.set_volume(32)
 
     def update(self):
         self.state_machine.update()
@@ -1098,6 +1092,7 @@ class Knight:
                         if self.state_machine.cur_state in (Jump, MoveJump, UpJump, UpMoveJump,
                                                             Fall, MoveFall, UpFall, UpMoveFall):
                             if not self.jump:
+                                self.land_sound.play()
                                 self.state_machine.add_event(('LANDED', 0))
                                 self.y = other_top + 65  # 타일 위로 위치 보정
                                 self.slash_eff.y = other_top + 65
@@ -1111,7 +1106,7 @@ class Knight:
                             self.y_dir = 0
 
         elif (group == 'knight:fly' or group == 'knight:walk'or group == 'knight:roll'
-              or group == 'knight:overload' or group == 'knight:boss') :
+              or group == 'knight:overload') :
             if get_time() - self.invincibility_time > 1 and other.die == False and self.hp > 0:
                 self.invincibility_time = get_time()
                 game_world.remove_object(server.hp1[self.hp - 1])
@@ -1120,6 +1115,21 @@ class Knight:
                 self.back_x = 80
                 game_world.add_object(self.hit_eff, 2)
                 self.attack_dir = self.x - other.x
+                self.damage_sound.play()
+                if self.hp < 1:
+                    Knight.die_sound.play()
+                    self.state_machine.add_event(('DIE', 0))
+
+        elif  group == 'knight:boss':
+            if get_time() - self.invincibility_time > 1 and other.die == False and self.hp > 0 and not other.state_machine.cur_state in (Die, DieEnd):
+                self.invincibility_time = get_time()
+                game_world.remove_object(server.hp1[self.hp - 1])
+                self.hp -= 1
+                self.hit_eff = HitEff(self.x, self.y, self.face_dir)
+                self.back_x = 80
+                game_world.add_object(self.hit_eff, 2)
+                self.attack_dir = self.x - other.x
+                self.damage_sound.play()
                 if self.hp < 1:
                     self.state_machine.add_event(('DIE', 0))
         elif  group == 'knight:attack':
@@ -1131,6 +1141,7 @@ class Knight:
                 self.back_x = 80
                 game_world.add_object(self.hit_eff, 2)
                 self.attack_dir = self.x - other.x
+                self.damage_sound.play()
                 if self.hp < 1:
                     self.state_machine.add_event(('DIE', 0))
         elif group == 'knight:goal':
@@ -1138,6 +1149,9 @@ class Knight:
                 self.stage = 2
             elif other.stage == 2:
                 self.stage = 3
+            elif other.stage == 3:
+                if server.boss and server.boss.die == True:
+                    self.stage = 4
             pass
 
 

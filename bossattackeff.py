@@ -45,12 +45,6 @@ class BossAttackEff:
                 sx, sy, 384, 384
             )
 
-        if math.cos(self.dir) < 0:
-            draw_rectangle(sx - 90, sy - 190, sx + 40, sy - 50)
-        else:
-            draw_rectangle(sx - 40, sy - 190, sx + 90, sy- 30)
-
-
     def get_bb(self):
         if math.cos(self.dir) < 0:
             return self.x- 90, self.y - 190, self.x+ 40, self.y - 50

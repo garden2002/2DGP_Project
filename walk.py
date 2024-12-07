@@ -26,6 +26,7 @@ FRAMES_PER_ACTION_DIE = 8
 
 class Walk_object:
     image = None
+    damage_sound = None
     def __init__(self, x = 700, y= 500):
         self.x, self.y = x, y
         self.action = 0
@@ -38,12 +39,13 @@ class Walk_object:
         self.on_ground = False
         self.hit_eff = HitEff()
         self.invincibility_time = 0
-        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
         self.build_behavior_tree()
-        if Walk_object.image == None:
+        if Walk_object.image is None:
             Walk_object.image = load_image('./resource/walk.png')
-
+        if Walk_object.damage_sound is None:
+            Walk_object.damage_sound = load_wav('./resource/enemy_damage.wav')
+            Walk_object.damage_sound.set_volume(32)
         self.patrol_locations = [(self.x - 200 ,self.y), (self.x + 200,self.y)]
         self.loc_no = 0
 
@@ -96,12 +98,6 @@ class Walk_object:
         else:
             self.image.clip_draw(int(self.frame) * 140, self.action * 140, 140, 140, sx, sy)
 
-        if math.cos(self.dir) > 0:
-            draw_rectangle(sx - 40, sy - 70, sx + 70, sy + 70)
-        else:
-            draw_rectangle(sx - 70, sy - 70, sx + 40, sy + 70)
-
-        self.font.draw(sx - 10, sy + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def get_bb(self):
         if math.cos(self.dir) > 0:
@@ -117,6 +113,7 @@ class Walk_object:
                 self.back_x = 80
                 self.hit_eff = HitEff(self.x, self.y, self.dir)
                 game_world.add_object(self.hit_eff, 2)
+                self.damage_sound.play()
                 if self.hp < 1:
                     self.die = True
                     self.frame = 0

@@ -33,6 +33,8 @@ FRAMES_PER_ACTION_DIEEND = 2
 class Die:
     @staticmethod
     def enter(boss, e):
+        boss.die_sound.play(2)
+        boss.die_count = 0
         boss.action = 7  # 낙하 동작의 인덱스를 8로 설정
         boss.frame = 0
     @staticmethod
@@ -40,9 +42,12 @@ class Die:
         pass
     @staticmethod
     def do(boss):
+        if boss.die_count > 1:
+            boss.state_machine.add_event(('END_MOTION', 0))
         boss.frame = (boss.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
         if boss.frame > 5:
-            boss.state_machine.add_event(('END_MOTION', 0))
+            boss.frame = 0
+            boss.die_count += 1
 
         if boss.back_x > 0:
             if math.cos(boss.dir) > 0:
@@ -63,14 +68,6 @@ class Die:
             )
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
-
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 85, sy - 300, sx + 190, sy - 30)
-        else:
-            draw_rectangle(sx - 190, sy - 300, sx + 85, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -85,14 +82,14 @@ class DieEnd:
         boss.frame = 0
     @staticmethod
     def exit(boss, e):
-        if boss.frame > 4:
-            boss.die = True
         pass
     @staticmethod
     def do(boss):
-        boss.frame = (boss.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if boss.frame < 4:
+            boss.frame = (boss.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
         if boss.frame > 4:
-            boss.state_machine.add_event(('END_MOTION', 0))
+            boss.frame = 3
+            boss.die = True
 
     @staticmethod
     def draw(boss):
@@ -106,14 +103,6 @@ class DieEnd:
             )
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
-
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 85, sy - 300, sx + 190, sy - 30)
-        else:
-            draw_rectangle(sx - 190, sy - 300, sx + 85, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -159,13 +148,6 @@ class Idle:
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
 
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 85, sy - 300, sx + 190, sy- 30)
-        else:
-            draw_rectangle(sx - 190, sy - 300, sx + 85, sy- 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -200,13 +182,6 @@ class MoveReady:
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
 
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 85, sy - 300, sx + 190, sy- 30)
-        else:
-            draw_rectangle(sx - 190, sy - 300, sx + 85, sy- 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -217,6 +192,7 @@ class MoveReady:
 class Move:
     @staticmethod
     def enter(boss, e):
+        boss.jump_sound.play()
         boss.action = 1  # 낙하 동작의 인덱스를 8로 설정
         boss.frame = 0
         boss.jump = True
@@ -265,13 +241,6 @@ class Move:
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
 
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 120, sy - 300, sx + 120, sy - 30)
-        else:
-            draw_rectangle(sx - 120, sy - 300, sx + 120, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -282,6 +251,7 @@ class Move:
 class Land:
     @staticmethod
     def enter(boss, e):
+        boss.land_sound.play()
         boss.action = 0  # 낙하 동작의 인덱스를 8로 설정
         boss.frame = 0
 
@@ -307,13 +277,6 @@ class Land:
             )
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx + 20, sy)
-
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 85- 20, sy - 300, sx + 190 - 20, sy - 30)
-        else:
-            draw_rectangle(sx - 190 + 20, sy - 300, sx + 85+ 20, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
 
     @staticmethod
     def get_bb(boss):
@@ -356,13 +319,6 @@ class AttackReady:
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
 
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 110, sy - 300, sx + 150, sy - 30)
-        else:
-            draw_rectangle(sx - 150, sy - 300, sx + 110, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -378,6 +334,7 @@ class Attack:
 
     @staticmethod
     def exit(boss, e):
+        boss.attack_sound.play()
         boss.boss_attack()
         pass
 
@@ -399,14 +356,6 @@ class Attack:
             )
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
-
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx, sy - 300, sx + 260, sy - 30)
-        else:
-            draw_rectangle(sx - 260, sy - 300, sx, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -443,13 +392,6 @@ class AttackEnd:
         else:
             boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
 
-        if math.cos(boss.dir) < 0:
-            draw_rectangle(sx - 85, sy - 300, sx + 190, sy - 30)
-        else:
-            draw_rectangle(sx - 190, sy - 300, sx + 85, sy - 30)
-
-        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
-
     @staticmethod
     def get_bb(boss):
         if math.cos(boss.dir) < 0:
@@ -459,16 +401,22 @@ class AttackEnd:
 
 class Boss:
     image = None
+    damage_sound = None
+    land_sound = None
+    jump_sound = None
+    attack_sound = None
+    die_sound = None
     def __init__(self, x = 1500, y= 400):
         self.x, self.y = x, y
         self.action = 0
         self.frame = 0
         self.dir = math.atan2(0 , 1)
-        self.hp = 1
+        self.hp = 40
         self.y_dir = -1
         self.on_ground = False
         self.ready = 0
         self.jump_count = 0
+        self.die_count = 0
         self.jump = False
         self.back_x = 0
         self.hit_eff = HitEff()
@@ -477,7 +425,6 @@ class Boss:
         self.invincibility_time = 0
         self.jump_time = 1
         self.attack_time = 1
-        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
         self.state_machine = StateMachine(self)
         self.state_machine.start(Idle)
@@ -494,9 +441,18 @@ class Boss:
                 DieEnd : {end_motion:Idle}
             }
         )
-        if Boss.image == None:
+        if Boss.image is None:
             Boss.image = load_image('./resource/boss.png')
-
+        if Boss.damage_sound is None:
+            Boss.damage_sound = load_wav('./resource/boss_damage.wav')
+            Boss.land_sound = load_wav('./resource/boss_land.wav')
+            Boss.attack_sound = load_wav('./resource/boss_strike_ground.wav')
+            Boss.jump_sound = load_wav('./resource/boss_jump.wav')
+            Boss.die_sound = load_wav('./resource/boss_die.wav')
+            Boss.damage_sound.set_volume(32)
+            Boss.jump_sound.set_volume(32)
+            Boss.land_sound.set_volume(32)
+            Boss.attack_sound.set_volume(32)
 
     def update(self):
         self.state_machine.update()
@@ -518,6 +474,7 @@ class Boss:
                 self.hp -= 1
                 self.hit_eff = HitEff(self.x, self.y - 200, self.dir)
                 game_world.add_object(self.hit_eff, 2)
+                self.damage_sound.play()
                 if self.hp < 1:
                     self.back_x = 300
                     self.state_machine.add_event(('DIE', 0))

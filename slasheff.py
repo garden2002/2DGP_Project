@@ -48,16 +48,6 @@ class SlashEff:
             else:
                 self.image.clip_draw(int(self.frame) * 256, self.action * 128, 256, 128, sx,
                                      sy)
-        if self.face_dir == 1:
-            if self.action == 0:
-                draw_rectangle(sx - 40, sy, sx + 40, sy + 110)
-            else:
-                draw_rectangle(sx - 30, sy - 65, sx + 110, sy + 65)
-        else:
-            if self.action == 0:
-                draw_rectangle(sx - 40, sy, sx + 40, sy + 110)
-            else:
-                draw_rectangle(sx - 110, sy - 65, sx + 30, sy + 65)
 
 
     def get_bb(self):

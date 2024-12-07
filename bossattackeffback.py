@@ -28,11 +28,6 @@ class BossAttackEffBack:
     def draw(self):
         sx = self.x - server.stage.window_left
         sy = self.y - server.stage.window_bottom
-        if math.cos(self.dir) < 0:
-            draw_rectangle(sx + 20, sy - 190, sx + 120, sy - 140)
-        else:
-            draw_rectangle(sx - 120, sy - 190, sx - 20, sy - 140)
-
 
     def get_bb(self):
         if math.cos(self.dir) < 0:

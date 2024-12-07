@@ -8,18 +8,11 @@ def unindent():
     global level
     level -= 1
 
-# def print_indent():
-#     for i in range(level):
-#         print("    ", end='')
-
 
 class BehaviorTree:
     FAIL, RUNNING, SUCCESS = -1, 0, 1
     FAIL, RUNNING, SUCCESS, UNDEF = 'FAIL', 'RUNNING', 'SUCCESS', 'UNDEF'
 
-    # how to run node?
-    # 'EVAL' : evaluate all nodes
-    # 'MONITOR' : evaluate only condition nodes
     run_mode = 'EVAL'
 
     def __init__(self, root_node):
@@ -44,7 +37,6 @@ class Node:
     def show_result(f):
         def inner(self):
             result = f(self)
-            #print(f'[{self.__class__.__name__:10s}] {self.name:40s} ==> ({result})')
             return result
 
         return inner
@@ -89,14 +81,6 @@ class Selector(Node):
         return self.value
 
 
-
-
-
-
-
-
-
-
 class Sequence(Node):
     def __init__(self, name, *nodes):
         self.children = list(nodes)
@@ -115,7 +99,6 @@ class Sequence(Node):
             child.tag_condition()
             if child.has_condition:
                 self.has_condition = True
-
 
 
     @Node.show_result
@@ -157,12 +140,6 @@ class Action(Node):
         self.value = self.func(*self.args)
         return self.value
 
-
-    # @Node.show_result
-    # def monitor_run(self):
-    #     return self.result, 'no change' # monitor run 시에는 기존 실행 결과를 재활용.
-
-
 class Condition(Node):
     def __init__(self, name, func, *args):
         self.name = name
@@ -188,6 +165,6 @@ class Condition(Node):
         self.value = self.func(*self.args)
         if self.value == BehaviorTree.RUNNING:
             print("ERROR: condition node cannot return RUNNING")
-            raise ValueError;
+            raise ValueError
 
         return self.value

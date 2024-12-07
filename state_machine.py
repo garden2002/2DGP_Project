@@ -66,10 +66,8 @@ class StateMachine:
             for check_event , next_state in self.transitions[self.cur_state].items():
                 if check_event(e):
                     self.cur_state.exit(self.o , e)
-                    print(f'EXIT from {self.cur_state}')
                     self.cur_state = next_state
                     self.cur_state.enter(self.o , e)
-                    print(f'ENTER into {self.cur_state}')
                     return
         pass
 
@@ -77,7 +75,6 @@ class StateMachine:
         #현재 상태를 시작 상태로 만듬
         self.cur_state = start_state
         self.cur_state.enter(self.o ,('START' , 0))
-        print(f'ENTER into {self.cur_state}')
         pass
 
     def draw(self):
@@ -90,7 +87,6 @@ class StateMachine:
 
     def add_event(self, e):
         self.event_que.append(e) # 상태머신용 이벤트 추가
-        #print(f'    DEBUG: new event {e} is added.')
         pass
 
     def get_bb(self):

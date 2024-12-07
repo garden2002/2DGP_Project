@@ -23,7 +23,7 @@ FRAMES_PER_ACTION_DIE = 6
 
 class Overload:
     image = None
-
+    damage_sound = None
     def __init__(self, x = 300, y= 400, type = 0 ):
         self.x, self.y = x, y
         self.action = 0
@@ -36,12 +36,13 @@ class Overload:
         self.type = type
         self.hit_eff = HitEff()
         self.invincibility_time = 0
-        self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
         self.build_behavior_tree()
-        if Overload.image == None:
+        if Overload.image is None:
             Overload.image = load_image('./resource/overload.png')
-
+        if Overload.damage_sound is None:
+            Overload.damage_sound = load_wav('./resource/enemy_damage.wav')
+            Overload.damage_sound.set_volume(32)
         if self.type == 0:
             self.patrol_locations = [(self.x, self.y), (self.x + 400, self.y + 400)]
         else:
@@ -81,11 +82,6 @@ class Overload:
             )
         else:
             self.image.clip_draw(int(self.frame) * 140, self.action * 140, 140, 140, sx, sy)
-        if math.cos(self.dir) > 0:
-            draw_rectangle(sx - 20, sy - 60, sx + 60, sy + 30)
-        else:
-            draw_rectangle(sx - 60, sy - 60, sx + 20, sy + 30)
-        self.font.draw(sx - 10, sy + 50, f'{self.hp:02d}', (255, 255, 0))
 
     def get_bb(self):
         if math.cos(self.dir) > 0:
@@ -103,6 +99,7 @@ class Overload:
                  self.attack_dir = other.face_dir
                  self.hit_eff = HitEff(self.x, self.y, self.dir)
                  game_world.add_object(self.hit_eff, 2)
+                 self.damage_sound.play()
                  if self.hp < 1:
                     self.die = True
                     self.frame = 0

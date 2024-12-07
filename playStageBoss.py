@@ -45,6 +45,7 @@ def init():
     game_world.add_collision_pair('knight:tile', server.knight, None)
     game_world.add_collision_pair('knight:boss', server.knight, None)
     game_world.add_collision_pair('knight:attack', server.knight, None)
+    game_world.add_collision_pair('knight:goal', server.knight, None)
 
     server.boss = Boss()
     game_world.add_object(server.boss, 1)
@@ -70,7 +71,7 @@ def update():
     if server.knight.die:
         finish()
         init()
-    if server.boss.die:
+    if server.knight.stage == 4:
         game_framework.change_mode(platStageEnd)
     pass
 
@@ -89,4 +90,13 @@ def resume():
 
 def finish():
     game_world.clear()
+    server.stage = None
+    server.flies = []
+    server.walks = []
+    server.overloads = []
+    server.rolls = []
+    server.hp1 = []
+    server.hp2 = None
+    server.map = None
+    server.boss = None
     pass

@@ -1,5 +1,5 @@
 import game_framework
-from pico2d import load_image, get_time, clear_canvas, update_canvas, get_events
+from pico2d import load_image, get_time, clear_canvas, update_canvas
 
 import platStageStart
 

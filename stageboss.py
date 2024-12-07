@@ -15,10 +15,13 @@ class StageBoss:
         self.w = self.image.w
         self.h = self.image.h
         self.tiles = []
-        self.goal = Goal(3760, 1810, 80, 110 , 1)
+        self.goal = Goal(1950, 200, 80, 170 , 3)
         self.load_tiles()
         self.window_left = clamp(0, int(server.knight.x) - self.cw // 2, self.w - self.cw - 1)
         self.window_bottom = clamp(0, int(server.knight.y) - self.ch // 2, self.h - self.ch - 1)
+        self.bgm = load_music('./resource/stage_boss.mp3')
+        self.bgm.set_volume(8)
+        self.bgm.repeat_play()
 
     def load_tiles(self):
         for tile in t1:
@@ -30,13 +33,6 @@ class StageBoss:
 
     def draw(self):
         self.image.clip_draw_to_origin(self.window_left, self.window_bottom, self.cw, self.ch, 0, 0)
-        for tile in self.tiles:
-            sx = tile.x - self.window_left
-            sy = tile.y - self.window_bottom
-            draw_rectangle(sx - tile.x_size, sy - tile.y_size, sx + tile.x_size, sy + tile.y_size)
-        sx = self.goal.x - self.window_left
-        sy = self.goal.y - self.window_bottom
-        draw_rectangle(sx - self.goal.x_size, sy - self.goal.y_size, sx + self.goal.x_size, sy + self.goal.y_size)
 
     def update(self):
         self.window_left = clamp(0, int(server.knight.x) - self.cw // 2, self.w - self.cw - 1)
