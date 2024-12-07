@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import platStageEnd
 from boss import Boss
 from hp1 import Hp1
 from hp2 import Hp2
@@ -69,6 +70,8 @@ def update():
     if server.knight.die:
         finish()
         init()
+    if server.boss.die:
+        game_framework.change_mode(platStageEnd)
     pass
 
 

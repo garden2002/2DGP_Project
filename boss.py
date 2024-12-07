@@ -7,7 +7,7 @@ import server
 from bossattackeff import BossAttackEff
 from bossattackeffback import BossAttackEffBack
 from hiteff import HitEff
-from state_machine import StateMachine, end_motion, landed, jump_time_out, attack_time_out
+from state_machine import StateMachine, end_motion, landed, jump_time_out, attack_time_out, die
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 
@@ -27,39 +27,99 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION_IDLE = 5
 FRAMES_PER_ACTION_JUMP = 4
 FRAMES_PER_ACTION_ATTACK = 6
-FRAMES_PER_ACTION_DIE = 9
+FRAMES_PER_ACTION_DIE = 4
+FRAMES_PER_ACTION_DIEEND = 2
 
 class Die:
     @staticmethod
-    def enter(knight, e):
-        knight.action = 8  # 낙하 동작의 인덱스를 8로 설정
-        knight.frame = 0
+    def enter(boss, e):
+        boss.action = 7  # 낙하 동작의 인덱스를 8로 설정
+        boss.frame = 0
     @staticmethod
-    def exit(knight, e):
-        if knight.frame > 12:
-            knight.die = True
+    def exit(boss, e):
         pass
     @staticmethod
-    def do(knight):
-        knight.frame = (knight.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
-        if knight.frame > 12:
-            knight.state_machine.add_event(('END_MOTION', 0))
+    def do(boss):
+        boss.frame = (boss.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if boss.frame > 5:
+            boss.state_machine.add_event(('END_MOTION', 0))
+
+        if boss.back_x > 0:
+            if math.cos(boss.dir) > 0:
+                boss.x += -2 * RUN_SPEED_PPS * game_framework.frame_time
+            else:
+                boss.x += 2 * RUN_SPEED_PPS * game_framework.frame_time
+            boss.back_x -= 1
 
     @staticmethod
-    def draw(knight):
-        sx = knight.x - server.stage.window_left
-        sy = knight.y - server.stage.window_bottom
-        if knight.face_dir == 1:
-            knight.image.clip_composite_draw(
-                int(knight.frame) * 128, knight.action * 128, 128, 128, 0, 'h', sx, sy, 128, 128)
+    def draw(boss):
+        sx = boss.x - server.stage.window_left
+        sy = boss.y - server.stage.window_bottom
+        if math.cos(boss.dir) < 0:
+            boss.image.clip_composite_draw(
+                int(boss.frame) * 842, boss.action * 624, 842, 624,
+                0, 'h',
+                sx, sy, 842, 624
+            )
         else:
-            knight.image.clip_draw(int(knight.frame) * 128, knight.action * 128, 128, 128, sx, sy)
+            boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
 
-        draw_rectangle(sx - 30, sy - 65, sx + 30, sy + 40)
+        if math.cos(boss.dir) < 0:
+            draw_rectangle(sx - 85, sy - 300, sx + 190, sy - 30)
+        else:
+            draw_rectangle(sx - 190, sy - 300, sx + 85, sy - 30)
+
+        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
 
     @staticmethod
-    def get_bb(knight):
-        return knight.x - 30, knight.y - 65, knight.x + 30, knight.y + 40
+    def get_bb(boss):
+        if math.cos(boss.dir) < 0:
+            return boss.x - 85, boss.y - 300, boss.x + 190, boss.y - 30
+        else:
+            return boss.x - 190, boss.y - 300, boss.x + 85, boss.y - 30
+
+class DieEnd:
+    @staticmethod
+    def enter(boss, e):
+        boss.action = 8  # 낙하 동작의 인덱스를 8로 설정
+        boss.frame = 0
+    @staticmethod
+    def exit(boss, e):
+        if boss.frame > 4:
+            boss.die = True
+        pass
+    @staticmethod
+    def do(boss):
+        boss.frame = (boss.frame + FRAMES_PER_ACTION_DIE * ACTION_PER_TIME * game_framework.frame_time)
+        if boss.frame > 4:
+            boss.state_machine.add_event(('END_MOTION', 0))
+
+    @staticmethod
+    def draw(boss):
+        sx = boss.x - server.stage.window_left
+        sy = boss.y - server.stage.window_bottom
+        if math.cos(boss.dir) < 0:
+            boss.image.clip_composite_draw(
+                int(boss.frame) * 842, boss.action * 624, 842, 624,
+                0, 'h',
+                sx, sy, 842, 624
+            )
+        else:
+            boss.image.clip_draw(int(boss.frame) * 842, boss.action * 624, 842, 624, sx, sy)
+
+        if math.cos(boss.dir) < 0:
+            draw_rectangle(sx - 85, sy - 300, sx + 190, sy - 30)
+        else:
+            draw_rectangle(sx - 190, sy - 300, sx + 85, sy - 30)
+
+        boss.font.draw(sx - 10, sy + 50, f'{boss.hp:02d}', (255, 255, 0))
+
+    @staticmethod
+    def get_bb(boss):
+        if math.cos(boss.dir) < 0:
+            return boss.x - 85, boss.y - 300, boss.x + 190, boss.y - 30
+        else:
+            return boss.x - 190, boss.y - 300, boss.x + 85, boss.y - 30
 
 class Idle:
     @staticmethod
@@ -404,12 +464,13 @@ class Boss:
         self.action = 0
         self.frame = 0
         self.dir = math.atan2(0 , 1)
-        self.hp = 20
+        self.hp = 1
         self.y_dir = -1
         self.on_ground = False
         self.ready = 0
         self.jump_count = 0
         self.jump = False
+        self.back_x = 0
         self.hit_eff = HitEff()
         self.attack_eff = BossAttackEff()
         self.attack_eff_back = BossAttackEff()
@@ -422,13 +483,15 @@ class Boss:
         self.state_machine.start(Idle)
         self.state_machine.set_transitions(
             {
-                Idle : {jump_time_out : MoveReady,attack_time_out : AttackReady},
-                MoveReady : {end_motion: Move},
-                Move : {landed: Land , end_motion:Idle},
-                Land : {end_motion:Idle},
-                AttackReady : {end_motion: Attack},
-                Attack: {end_motion: AttackEnd},
-                AttackEnd:{end_motion: Idle}
+                Idle : { die:Die , jump_time_out : MoveReady,attack_time_out : AttackReady},
+                MoveReady : {die:Die , end_motion: Move},
+                Move : {die:Die , landed: Land , end_motion:Idle},
+                Land : {die:Die , end_motion:Idle},
+                AttackReady : {die:Die , end_motion: Attack},
+                Attack: {die:Die , end_motion: AttackEnd},
+                AttackEnd:{die:Die , end_motion: Idle},
+                Die : {end_motion:DieEnd},
+                DieEnd : {end_motion:Idle}
             }
         )
         if Boss.image == None:
@@ -456,7 +519,8 @@ class Boss:
                 self.hit_eff = HitEff(self.x, self.y - 200, self.dir)
                 game_world.add_object(self.hit_eff, 2)
                 if self.hp < 1:
-                    self.die = True
+                    self.back_x = 300
+                    self.state_machine.add_event(('DIE', 0))
                     self.frame = 0
 
         elif group == 'boss:tile':
