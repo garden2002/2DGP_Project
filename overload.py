@@ -4,7 +4,7 @@ import server
 from pico2d import *
 
 from behavior_tree import BehaviorTree, Action, Sequence, Selector, Condition
-from hit_eff import Hit_eff
+from hiteff import HitEff
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 RUN_SPEED_KMPH = 10.0  # Km / Hour
@@ -34,7 +34,7 @@ class Overload:
         self.dir = -1
         self.hp = 4
         self.type = type
-        self.hit_eff = Hit_eff()
+        self.hit_eff = HitEff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
@@ -101,7 +101,7 @@ class Overload:
                  self.back_x = 100
                  self.back_y = 70
                  self.attack_dir = other.face_dir
-                 self.hit_eff = Hit_eff(self.x, self.y, self.dir)
+                 self.hit_eff = HitEff(self.x, self.y, self.dir)
                  game_world.add_object(self.hit_eff, 2)
                  if self.hp < 1:
                     self.die = True

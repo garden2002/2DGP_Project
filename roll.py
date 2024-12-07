@@ -4,7 +4,7 @@ import game_world
 from pico2d import *
 import server
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
-from hit_eff import Hit_eff
+from hiteff import HitEff
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
 
@@ -31,7 +31,7 @@ class Roll:
         self.hp = 4
         self.y_dir = 0
         self.on_ground = False
-        self.hit_eff = Hit_eff()
+        self.hit_eff = HitEff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
@@ -113,7 +113,7 @@ class Roll:
                 self.invincibility_time = get_time()
                 self.hp -= 1
                 self.back_x = 80
-                self.hit_eff = Hit_eff(self.x, self.y, self.dir)
+                self.hit_eff = HitEff(self.x, self.y, self.dir)
                 game_world.add_object(self.hit_eff, 2)
                 if self.hp < 1:
                     self.die = True

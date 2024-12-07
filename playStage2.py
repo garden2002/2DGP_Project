@@ -2,7 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
-import play_stage_boss
+import playStageBoss
 from hp1 import Hp1
 from hp2 import Hp2
 
@@ -79,7 +79,7 @@ def update():
     game_world.update()
     game_world.handle_collisions()
     if server.knight.stage == 3:
-        game_framework.change_mode(play_stage_boss)
+        game_framework.change_mode(playStageBoss)
     if server.knight.die:
         finish()
         init()

@@ -1,7 +1,7 @@
 import game_framework
 from pico2d import load_image, get_time, clear_canvas, update_canvas, get_events
 
-import start_mode
+import startMode
 
 
 def init():
@@ -19,7 +19,7 @@ def update():
     global logo_start_time
     if get_time() - logo_start_time >= 2.0:
         logo_start_time =get_time()
-        game_framework.change_mode(start_mode)
+        game_framework.change_mode(startMode)
 
 
 def draw():

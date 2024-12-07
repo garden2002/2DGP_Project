@@ -8,12 +8,12 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 7
 
 
-class Dash_eff:
+class DashEff:
     image = None
 
     def __init__(self, x = 100, y = 200, action = 0 , face_dir = 1):
-        if Dash_eff.image == None:
-            Dash_eff.image = load_image('./resource/dash_eff.png')
+        if DashEff.image == None:
+            DashEff.image = load_image('./resource/dash_eff.png')
         self.x, self.y ,self.face_dir = x , y ,face_dir
         self.frame = 0
 

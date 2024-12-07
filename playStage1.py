@@ -2,7 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
-import play_stage_2
+import playStage2
 from fly import Flying_object
 from hp1 import Hp1
 from hp2 import Hp2
@@ -78,7 +78,7 @@ def update():
     game_world.update()
     game_world.handle_collisions()
     if server.knight.stage == 2:
-        game_framework.change_mode(play_stage_2)
+        game_framework.change_mode(playStage2)
     if server.knight.die:
         finish()
         init()

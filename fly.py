@@ -1,14 +1,12 @@
-import random
-import math
 import game_framework
 import game_world
 import server
 from pico2d import *
 from behavior_tree import BehaviorTree, Action, Sequence, Selector, Condition
-from hit_eff import Hit_eff
+from hiteff import HitEff
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 30 cm
-RUN_SPEED_KMPH = 15.0  # Km / Hour
+RUN_SPEED_KMPH = 20.0  # Km / Hour
 RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
@@ -34,7 +32,7 @@ class Flying_object:
         self.back_y = 0
         self.dir = -1
         self.hp = 4
-        self.hit_eff = Hit_eff()
+        self.hit_eff = HitEff()
         self.invincibility_time = 0
         self.font = load_font('./resource/ENCR10B.TTF', 16)
         self.die = False
@@ -96,7 +94,7 @@ class Flying_object:
                 self.hp -= 1
                 self.back_x = 100
                 self.back_y = 70
-                self.hit_eff = Hit_eff(self.x, self.y, self.dir)
+                self.hit_eff = HitEff(self.x, self.y, self.dir)
                 game_world.add_object(self.hit_eff, 2)
                 if self.hp < 1:
                     self.die = True

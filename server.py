@@ -7,6 +7,7 @@ flies = []
 walks = []
 overloads = []
 rolls = []
+boss = None
 map = None
 hp1 = []
 hp2 = None

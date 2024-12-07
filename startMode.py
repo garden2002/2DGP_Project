@@ -2,7 +2,8 @@ from pico2d import load_image, get_events, clear_canvas, update_canvas
 from sdl2 import SDL_QUIT, SDL_KEYDOWN, SDLK_ESCAPE, SDLK_SPACE
 
 import game_framework
-import play_stage_1
+import playStage1
+
 
 def init():
     global image
@@ -21,7 +22,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
-            game_framework.change_mode(play_stage_1)
+            game_framework.change_mode(playStage1)
 
 
 def draw():

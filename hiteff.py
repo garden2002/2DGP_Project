@@ -8,12 +8,12 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 7
 
 
-class Hit_eff:
+class HitEff:
     image = None
 
     def __init__(self, x = 100, y = 200, face_dir = 1):
-        if Hit_eff.image == None:
-            Hit_eff.image = load_image('./resource/hit_eff.png')
+        if HitEff.image == None:
+            HitEff.image = load_image('./resource/hit_eff.png')
         self.x, self.y ,self.face_dir = x , y ,face_dir
         self.frame = 0
 

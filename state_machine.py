@@ -11,8 +11,11 @@ def fall(e):
 def start_event(e):
     return e[0] == 'START'
 
-def time_out(e):
-    return e[0] == 'TIME_OUT'
+def jump_time_out(e):
+    return e[0] == 'JUMP_TIME_OUT'
+
+def attack_time_out(e):
+    return e[0] == 'ATTACK_TIME_OUT'
 
 def end_motion(e):
     return e[0] == 'END_MOTION'

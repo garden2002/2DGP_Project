@@ -7,9 +7,9 @@ from pico2d import load_image, draw_rectangle, get_time, load_font, clamp, delay
 
 import game_framework
 import server
-from dash_eff import Dash_eff
-from hit_eff import Hit_eff
-from slash import Slash_eff
+from dasheff import DashEff
+from hiteff import HitEff
+from slasheff import SlashEff
 from state_machine import (right_down, left_up, left_down, right_up, start_event, StateMachine, z_down, x_down,
                            end_motion, up_down, up_up, s_down, landed, fall, die)
 
@@ -935,10 +935,10 @@ class Knight:
         self.action = 0
         self.face_dir = 1
         self.stage = stage
-        self.hit_eff = Hit_eff()
+        self.hit_eff = HitEff()
         self.hp = 4
-        self.slash_eff = Slash_eff()
-        self.dash_eff = Dash_eff()
+        self.slash_eff = SlashEff()
+        self.dash_eff = DashEff()
         self.state_machine = StateMachine(self)
         self.state_machine.start(state)
         self.state_machine.set_transitions(
@@ -1029,7 +1029,7 @@ class Knight:
         self.state_machine.draw()
 
     def knight_slash(self):
-        self.slash_eff = Slash_eff()
+        self.slash_eff = SlashEff()
         x_offset = 64 if self.action != 0 else 0
         y_offset = 64 if self.action == 0 else 0
         self.slash_eff.x = self.x + (x_offset if self.face_dir == 1 else -x_offset)
@@ -1042,9 +1042,10 @@ class Knight:
         game_world.add_collision_pair('slash:walk', self.slash_eff, None)
         game_world.add_collision_pair('slash:overload', self.slash_eff, None)
         game_world.add_collision_pair('slash:roll', self.slash_eff, None)
+        game_world.add_collision_pair('slash:boss', self.slash_eff, None)
 
     def knight_dash(self):
-        self.dash_eff = Dash_eff()
+        self.dash_eff = DashEff()
         dash_offset = 128
         self.dash_eff.x = self.x + (dash_offset if self.face_dir == -1 else -dash_offset)
         self.dash_eff.y = self.y
@@ -1092,7 +1093,7 @@ class Knight:
                     if dy_bottom < dy_top:  # 아래에서 위로 충돌
                         self.y_dir = -1
                         self.jump = False
-                        self.jump_frame = 11
+                        self.jump_frame = 12
                     else:
                         if self.state_machine.cur_state in (Jump, MoveJump, UpJump, UpMoveJump,
                                                             Fall, MoveFall, UpFall, UpMoveFall):
@@ -1109,23 +1110,37 @@ class Knight:
                             self.on_ground = True
                             self.y_dir = 0
 
-        elif group == 'knight:fly' or group == 'knight:walk'or group == 'knight:roll'or group == 'knight:overload':
+        elif (group == 'knight:fly' or group == 'knight:walk'or group == 'knight:roll'
+              or group == 'knight:overload' or group == 'knight:boss') :
             if get_time() - self.invincibility_time > 1 and other.die == False and self.hp > 0:
                 self.invincibility_time = get_time()
                 game_world.remove_object(server.hp1[self.hp - 1])
                 self.hp -= 1
-                self.hit_eff = Hit_eff(self.x, self.y, self.face_dir)
+                self.hit_eff = HitEff(self.x, self.y, self.face_dir)
                 self.back_x = 80
                 game_world.add_object(self.hit_eff, 2)
                 self.attack_dir = self.x - other.x
                 if self.hp < 1:
                     self.state_machine.add_event(('DIE', 0))
-
+        elif  group == 'knight:attack':
+            if get_time() - self.invincibility_time > 1 and self.hp > 0:
+                self.invincibility_time = get_time()
+                game_world.remove_object(server.hp1[self.hp - 1])
+                self.hp -= 1
+                self.hit_eff = HitEff(self.x, self.y, self.face_dir)
+                self.back_x = 80
+                game_world.add_object(self.hit_eff, 2)
+                self.attack_dir = self.x - other.x
+                if self.hp < 1:
+                    self.state_machine.add_event(('DIE', 0))
         elif group == 'knight:goal':
             if other.stage == 1:
                 self.stage = 2
             elif other.stage == 2:
                 self.stage = 3
             pass
+
+
+
 
 

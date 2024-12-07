@@ -24,6 +24,7 @@ class StageBoss:
         for tile in t1:
             self.tiles.append(tile)
             game_world.add_collision_pair('knight:tile', None, tile)
+            game_world.add_collision_pair('boss:tile', None, tile)
         game_world.add_collision_pair('knight:goal', None, self.goal)
         pass
 
