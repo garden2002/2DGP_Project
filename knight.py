@@ -901,7 +901,7 @@ class Knight:
     sword_sound = None
     die_sound = None
     def __init__(self,stage = 1 , dash = False , state = Idle):
-        self.x, self.y = 100 ,200
+        self.x, self.y = 100 ,300
         self.frame = 0
         self.back_x = 0
         self.jump_frame = 0
